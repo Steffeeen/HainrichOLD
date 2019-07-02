@@ -7,6 +7,13 @@
       "config": {
         "useBuildUtils": "@now/build-utils@canary"
       }
+    },
+    {
+      "src": "webinterface/index.html",
+      "use": "@now/static",
+      "config": {
+        "useBuildUtils": "@now/build-utils@canary"
+      }
     }
   ]
 }

@@ -46,5 +46,4 @@ client.on('message', msg => {
         msg.channel.send("Command not found");
         console.error(err);
     }
-
 });
