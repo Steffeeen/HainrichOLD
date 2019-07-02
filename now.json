@@ -1,5 +1,18 @@
 {
   "builds": [
-    { "src": "bot.js", "use": "@now/node" }
+    {
+      "src": "www/index.html",
+      "use": "@now/static",
+      "config": {
+        "useBuildUtils": "@now/build-utils@canary"
+      }
+    },
+    {
+      "src": "bot.js",
+      "use": "@now/node",
+      "config": {
+        "useBuildUtils": "@now/build-utils@canary"
+      }
+    }
   ]
 }
