@@ -1,8 +1,15 @@
+const helper = require("../helper.js");
+
 exports.permissionLevel = 0;
+exports.description = "Displays this help";
+exports.args = "[command]";
+exports.minArgs = 0;
+exports.maxArgs = 1;
+
 exports.run = (client, msg, args) => {
-     msg.channel.send("------Help------");
-     msg.channel.send("help: help");
-     msg.channel.send("changeprefix: changeprefix <prefix>");
-     msg.channel.send("mod: mod <list|add|remove> [user]");
-     msg.channel.send("reload: reload <command>");
+     if(args.length === 0) {
+         msg.channel.send(helper.getHelp());
+     } else {
+         msg.channel.send(helper.getHelpMessage(args[0]));
+     }
 };

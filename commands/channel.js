@@ -3,7 +3,7 @@ exports.voiceChannel = undefined;
 exports.connection = undefined;
 exports.run = (client, msg, args) => {
 
-     if(args.length === 1) {
+     /*if(args.length === 1) {
           if(args[0] === "join") {
                if(msg.member.voiceChannel) {
                     this.voiceChannel = msg.member.voiceChannel;
@@ -21,5 +21,5 @@ exports.run = (client, msg, args) => {
           }
      } else {
           msg.channel.send("Usage: channel <join|leave>");
-     }
+     }*/
 };
