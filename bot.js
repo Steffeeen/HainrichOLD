@@ -54,6 +54,6 @@ function parseCommand(msg) {
 
     } catch(err) {
         msg.channel.send("Command not found");
-        //console.error(err);
+        console.error(err);
     }
 }
