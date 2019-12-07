@@ -1,23 +1,24 @@
-exports.permissionLevel = 1;
-exports.description = "Changes the command prefix";
-exports.args = "<prefix>";
-exports.minArgs = 1;
-exports.maxArgs = 1;
+module.exports = {
+    name: "changeprefix",
+    description: "Change the command prefix",
+    aliases: ["prefix"],
+    permissionLevel: 1,
+    args: [{
+        name: "prefix",
+        permissionLevel: 1,
+        type: "char",
+        run: function (client, msg, args) {
+            const fs = require("fs");
+            const config = require("../config.json");
 
-exports.run = (client, msg, args) => {
-     if(!args || args.length < 1) {
-          return msg.reply("You have to provide a new prefix");
-     }
+            config.prefix = args[0];
+            fs.writeFile("./config.json", JSON.stringify(config), err => console.error(err));
 
-     const fs = require("fs");
-     const config = require("../config.json");
+            msg.channel.send("Changed the command prefix to: " + args[0]);
 
-     if(args[0].length === 1) {
-          config.prefix = args[0];
-          fs.writeFile("./config.json", JSON.stringify(config), err => console.error(err));
+        }
+    }],
+    run(client, msg, args) {
 
-          msg.channel.send("Changed the command prefix to: " + args[0]);
-     } else {
-          msg.channel.send("Prefixes can only be one char");
-     }
-}
+    }
+};

@@ -10,7 +10,11 @@
     "discord.js": "^11.4.2",
     "ffmpeg-binaries": "^4.0.0",
     "node-opus": "^0.3.2",
-    "npm": "^6.9.2",
+    "npm": "^6.10.0",
+    "prism-media": "^1.0.2",
+    "spotify-web-api-node": "^4.0.0",
+    "yt-search": "^0.4.1",
+    "ytdl-core": "^0.29.3",
     "ytdl-core-discord": "^1.0.3"
   },
   "devDependencies": {},

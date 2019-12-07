@@ -1,34 +1,62 @@
-exports.permissionLevel = 1;
-exports.description = "Clears the current chat";
-exports.args = "<amount|all>";
-exports.minArgs = 1;
-exports.maxArgs = 1;
+const config = require("../config.json");
 
-exports.run = (client, msg, args) => {
-    if(msg.channel.type !== "text") {
-        msg.channel.send("Not a text channel!");
-        return;
-    }
-
-    if(args[0] === "all") {
-        let amount = msg.channel.messages.size;
-        let count = amount / 100;
-        let cleared = 0;
-
-        let promises = [];
-
-        for(let i = 0; i < count + 1; i++) {
-            promises.push(msg.channel.bulkDelete(100, true).then(messages => {cleared += messages.size;}));
+module.exports = {
+    name: "clear",
+    description: "Clears the current chat",
+    aliases: ["c"],
+    permissionLevel: 1,
+    args: [{
+        name: "amount",
+        permissionLevel: 1,
+        type: "int",
+        min: 1,
+        max: 100,
+        run: function (client, msg, args) {
+            msg.channel.bulkDelete(args[0], true).then(messages => {
+                msg.channel.send(`Cleared ${messages.size} messages`);
+                musicplayer.updateCurrentDisplay();
+                musicplayer.updateQueueDisplay();
+            });
         }
-        Promise.all(promises).then(() => msg.channel.send(`Cleared ${cleared} messages`));
-        return;
-    }
+    }],
+    subcommands: [{
+        name: "all",
+        aliases: ["a"],
+        permissionLevel: 1,
+        args: [],
+        run: function (client, msg, args) {
+            if (msg.channel.type !== "text") {
+                msg.channel.send("Not a text channel!");
+                return;
+            }
 
-    let amount = parseInt(args[0]);
+            let amount = msg.channel.messages.size;
+            console.log("messages amount: " + amount);
+            let count = amount / 100;
+            console.log(count);
 
-    if(amount) {
-        msg.channel.bulkDelete(amount, true).then(messages => msg.channel.send(`Cleared ${messages.size} messages`));
-    } else {
-        msg.channel.send("First argument has to be a number");
+            clearMessages(count, msg).then(cleared => {
+                msg.channel.send(`Cleared ${cleared} messages`);
+                global.queueUIReady = false;
+                global.currentUIReady = false;
+                musicplayer.updateCurrentDisplay();
+                musicplayer.updateQueueDisplay();
+            });
+        }
+    }],
+
+    run(client, msg) {
+
     }
 };
+
+async function clearMessages(count, msg) {
+    let cleared = 0;
+
+    for (let i = 0; i < count + 1; i++) {
+        await msg.channel.bulkDelete(100, true).then(messages => {
+            cleared += messages.size;
+        });
+    }
+    return cleared;
+}
