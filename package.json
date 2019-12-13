@@ -10,7 +10,7 @@
     "discord.js": "^11.4.2",
     "ffmpeg-binaries": "^4.0.0",
     "node-opus": "^0.3.2",
-    "npm": "^6.10.0",
+    "npm": "^6.13.4",
     "prism-media": "^1.0.2",
     "spotify-web-api-node": "^4.0.0",
     "yt-search": "^0.4.1",
