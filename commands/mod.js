@@ -6,7 +6,7 @@ module.exports = {
     args: "<list|add|remove>",
     minArgs: 1,
     maxArgs: 2,
-    subcommands: {
+    /*subcommands: {
         list: function (client, msg, args) {
             const fs = require("fs");
             const config = require("../config.json");
@@ -55,7 +55,7 @@ module.exports = {
             }
             msg.channel.send("User not found");
         }
-    },
+    },*/
     run(client, msg, args) {
 
     }

@@ -1,5 +1,4 @@
 const EventEmitter = require("events");
-const config = require("../config.json");
 
 class UIComponent extends EventEmitter {
 
@@ -9,7 +8,7 @@ class UIComponent extends EventEmitter {
         this.content = "";
         this.reactions = reactions;
 
-        this.messageID = null;
+        this.messageID = "";
         this.collector = null;
         this.filter = (reaction, user) => this.reactions.includes(reaction.emoji.name) && !user.bot;
     }
@@ -19,43 +18,47 @@ class UIComponent extends EventEmitter {
             return;
         }
 
-        let messages = await this.channel.fetchMessages();
+        let message = await this.channel.messages.fetch(this.messageID, true);
 
-        if (!messages.get(this.messageID)) {
-            this.channel.send(this.content).then(async message => {
-                this.messageID = message.id;
+        console.log(message);
 
-                message.pin();
+        if (!message) {
+            this.channel.send(this.content)
+                .then(async message => {
+                    this.messageID = message.id;
 
-                this.changeReactions(this.reactions);
-                this.collector = message.createReactionCollector(this.filter);
-                this.collector.on("collect", reaction => {
-                    super.emit(reaction.emoji.name);
-                    console.log(reaction.emoji.name);
-                    reaction.fetchUsers(5).then(users => {
-                        let remove = [];
+                    message.pin();
 
-                        for(let user of users.array()) {
-                            if(!user.bot) {
-                                remove.push(user);
-                            }
-                        }
+                    this.changeReactions(this.reactions);
+                    this.collector = message.createReactionCollector(this.filter);
+                    this.collector.on("collect", reaction => {
+                        super.emit(reaction.emoji.name);
+                        console.log(reaction.emoji.name);
+                        reaction.users.fetch({limit: 5})
+                            .then(users => {
+                                let remove = [];
 
-                        for(let user of remove) {
-                            reaction.remove(user);
-                        }
-                    });
+                                for (let user of users.array()) {
+                                    if (!user.bot) {
+                                        remove.push(user);
+                                    }
+                                }
+
+                                for (let user of remove) {
+                                    reaction.users.remove(user);
+                                }
+                            });
                 });
             });
         } else {
-            let message = this.channel.messages.array().find(message => message.id === this.messageID);
-            message.edit(this.content);
+            console.log(message);
+            await message.edit(this.content);
         }
     }
 
     deleteMessage() {
         if(this.messageID) {
-            let message = this.channel.messages.array().find(message => message.id === this.messageID);
+            let message = this.channel.messages.fetch(this.messageID, true);
             message.delete();
         }
     }
@@ -68,12 +71,9 @@ class UIComponent extends EventEmitter {
     async changeReaction(index, newReaction) {
         this.reactions[index] = newReaction;
 
-        let message = this.channel.messages.array().find(message => message.id === this.messageID);
+        let message = await this.channel.messages.fetch(this.messageID, true);
 
-        for (let i = index; i < message.reactions.array().length; i++) {
-            let reaction = message.reactions.array()[message.reactions.array().length - 1];
-            await reaction.fetchUsers(5).then(users => reaction.remove(users.array()[users.array().length - 1]));
-        }
+        await message.reactions.removeAll();
 
         for (let i = index; i < this.reactions.length; i++) {
             await message.react(this.reactions[i]);
@@ -83,12 +83,9 @@ class UIComponent extends EventEmitter {
     async changeReactions(reactions) {
         this.reactions = reactions;
 
-        let message = this.channel.messages.array().find(message => message.id === this.messageID);
+        let message = await this.channel.messages.fetch(this.messageID, true);
 
-        for (let i = 0; i < message.reactions.array().length; i++) {
-            let reaction = message.reactions.array()[this.message.reactions.array().length - 1];
-            await reaction.fetchUsers(5).then(users => reaction.remove(users.array()[users.array().length - 1]));
-        }
+        await message.reactions.removeAll();
 
         for (let reaction of this.reactions) {
             await message.react(reaction);

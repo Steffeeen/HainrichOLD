@@ -3,8 +3,7 @@ const fs = require("fs");
 exports.getHelpMessage = (command) => {
     try {
         let commandFile = require("./commands/" + command + ".js");
-        let message = `${command}: /${command} ${commandFile.args} \n${commandFile.description}`;
-        return message;
+        return `${command}: /${command} ${commandFile.args} \n${commandFile.description}`;
     } catch(err) {
         return "Command not found!";
     }

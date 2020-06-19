@@ -9,7 +9,6 @@ module.exports = {
         type: "char",
         run: function (client, msg, args) {
             const fs = require("fs");
-            const config = require("../config.json");
 
             config.prefix = args[0];
             fs.writeFile("./config.json", JSON.stringify(config), err => console.error(err));

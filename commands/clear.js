@@ -1,8 +1,6 @@
-const config = require("../config.json");
-
 module.exports = {
     name: "clear",
-    description: "Clears the current chat",
+    description: "Clears the current chat, limited to messages that are not older than 14 days",
     aliases: ["c"],
     permissionLevel: 1,
     args: [{
@@ -11,6 +9,9 @@ module.exports = {
         type: "int",
         min: 1,
         max: 100,
+        validate: () => {
+            return true;
+        },
         run: function (client, msg, args) {
             msg.channel.bulkDelete(args[0], true).then(messages => {
                 msg.channel.send(`Cleared ${messages.size} messages`);

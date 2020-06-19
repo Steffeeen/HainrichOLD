@@ -14,9 +14,9 @@ module.exports = {
         permissionLevel: 2,
         args: [],
         async run(client, msg, args) {
-            if(msg.member.voiceChannel) {
+            if (msg.member.voice.channel) {
                 console.log("Is in voice channel");
-                await mp.joinChannel(msg.member.voiceChannel);
+                await mp.joinChannel(msg.member.voice.channel);
             }
 
             if(!mp.isStreamRunning()) {
@@ -86,7 +86,9 @@ module.exports = {
             permissionLevel: 2,
             type: "searchquery",
             optional: false,
-            validate: arg => {return true;}
+            validate: () => {
+                return true;
+            }
         }],
         run(client, msg, {query}) {
             mp.addToQueue(query, msg.member);

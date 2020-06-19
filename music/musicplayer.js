@@ -6,7 +6,6 @@ const events = require("events");
 const UIList = require("../messageUI/uiList");
 const UICurrentSong = require("../messageUI/uiCurrentSong");
 const UIStatus = require("../messageUI/uiStatus");
-const config = require("../config.json");
 const fs = require("fs");
 
 const eventEmitter = new events.EventEmitter();
@@ -15,22 +14,15 @@ const ytSearch = util.promisify(ytSearchCallback);
 
 let textChannel;
 
-if(config.textChannel) {
-    textChannel = client.channels.find(e => e.id === config.textChannel);
-    //client.channels.array().forEach(channel => console.log(channel.name));
-}
+load();
 
 client.on("disconnect", () => {
     queueUI.deleteMessage();
     currentUI.deleteMessage();
 });
 
-process.on("beforeExit", (code) => console.log("beforeExit"));
-process.on("exit", (code) => console.log("exit"));
 
 let queueUI, currentUI, statusUI;
-
-setTextChannel(textChannel);
 
 let voiceChannel;
 let dispatcher;
@@ -42,6 +34,15 @@ let currentStream;
 let volume = 0.05;
 
 let paused = false;
+
+async function load() {
+    if (config.textChannel) {
+        // textChannel = client.channels.find(e => e.id === config.textChannel);
+        textChannel = await client.channels.fetch(config.textChannel);
+        setTextChannel(textChannel);
+        //client.channels.array().forEach(channel => console.log(channel.name));
+    }
+}
 
 function begin() {
     nextSong();
@@ -95,16 +96,20 @@ function startStream(url) {
         console.log("voiceChannel");
         console.log("url: " + url);
         //TODO wait 1 sec
-        dispatcher = voiceChannel.connection.playStream(ytdl(url, {filter: "audioonly"}), {volume: volume, seek: queue.getCurrentSong().start});
+        dispatcher = voiceChannel.connection.play(ytdl(url, {filter: "audioonly"}), {
+            volume: volume,
+            passes: config.passes,
+            seek: queue.getCurrentSong().start
+        });
         streamRunning = true;
         console.log("started playing");
         updateCurrentDisplay();
-        dispatcher.on("end", (reason => {
+        dispatcher.on("finish", reason => {
             console.log("stream ended: " + reason);
-            if(reason !== "user") {
+            if (reason !== "user") {
                 nextSong();
             }
-        }));
+        });
     }
 }
 
@@ -313,23 +318,29 @@ function getProgress() {
 async function setTextChannel(channel) {
     textChannel = channel;
 
-    let messages = await textChannel.fetchMessages();
+    let messages = await textChannel.messages.fetch({limit: 100}, true);
+
+    // while(messages.size > 0) {
     console.log(`Found ${messages.size} messages`);
 
     let amount = messages.size / 50;
-    for(let i = 0; i < amount + 1; i++) {
+    for (let i = 0; i < amount + 1; i++) {
         console.log(i);
-        await textChannel.bulkDelete(50);
+        await textChannel.bulkDelete(50).catch(err => {
+        });
     }
 
-    config.textChannel = textChannel.id;
-    fs.writeFileSync("config.json", JSON.stringify(config), err => console.error(err));
+    messages = await textChannel.messages.fetch({limit: 100}, true);
+    // }
 
-    if(queueUI) {
+    config.textChannel = textChannel.id;
+    fs.writeFileSync("config.json", JSON.stringify(config));
+
+    if (queueUI) {
         queueUI.deleteMessage();
     }
 
-    if(currentUI) {
+    if (currentUI) {
         currentUI.deleteMessage();
     }
 
