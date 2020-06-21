@@ -1,7 +1,7 @@
 module.exports = {
     name: "deepclear",
     description: "Clears the entire current chat",
-    aliases: ["c"],
+    aliases: ["dc"],
     permissionLevel: 2,
     args: [],
     subcommands: [],

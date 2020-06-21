@@ -6,32 +6,22 @@ module.exports = {
     args: [{
         name: "amount",
         permissionLevel: 1,
-        type: "int",
+        type: "positiveNumber",
         min: 1,
-        max: 100,
-        validate: () => {
-            return true;
-        },
-        run: function (client, msg, args) {
-            msg.channel.bulkDelete(args[0], true).then(messages => {
-                msg.channel.send(`Cleared ${messages.size} messages`);
-                musicplayer.updateCurrentDisplay();
-                musicplayer.updateQueueDisplay();
-            });
-        }
+        max: 100
     }],
     subcommands: [{
         name: "all",
         aliases: ["a"],
         permissionLevel: 1,
         args: [],
-        run: function (client, msg, args) {
+        run: function (msg, args) {
             if (msg.channel.type !== "text") {
                 msg.channel.send("Not a text channel!");
                 return;
             }
 
-            let amount = msg.channel.messages.size;
+            let amount = msg.channel.messages.holds;
             console.log("messages amount: " + amount);
             let count = amount / 100;
             console.log(count);
@@ -46,8 +36,12 @@ module.exports = {
         }
     }],
 
-    run(client, msg) {
-
+    run(msg, args) {
+        msg.channel.bulkDelete(args[0], true).then(messages => {
+            msg.channel.send(`Cleared ${messages.size} messages`);
+            musicplayer.updateCurrentDisplay();
+            musicplayer.updateQueueDisplay();
+        });
     }
 };
 

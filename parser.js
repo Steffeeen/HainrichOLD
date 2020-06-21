@@ -15,6 +15,8 @@ function getParsed(expectedType, arg, min, max) {
             return parseWholeNumber(arg, min, max);
         case "decimal":
             return parseDecimal(arg, min, max);
+        case "char":
+            return parseChar(arg);
         case "string":
             return arg;
         case "query":
@@ -123,6 +125,14 @@ function parseDecimal(arg, min, max) {
     }
 
     return number;
+}
+
+function parseChar(arg) {
+    if (arg.length === 1) {
+        return arg;
+    }
+
+    throw `${arg}: is not a valid character`
 }
 
 module.exports.getParsed = getParsed;

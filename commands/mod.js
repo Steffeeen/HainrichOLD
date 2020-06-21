@@ -1,62 +1,67 @@
 module.exports = {
-    name: "mod",
+    name: "moderator",
     description: "Manage the moderators",
-    aliases: [],
+    aliases: ["mod"],
     permissionLevel: 1,
-    args: "<list|add|remove>",
-    minArgs: 1,
-    maxArgs: 2,
-    /*subcommands: {
-        list: function (client, msg, args) {
-            const fs = require("fs");
-            const config = require("../config.json");
+    subcommands: [
+        {
+            name: "list",
+            run: async (msg) => {
+                let modNames = [];
 
-            let modNames = [];
-            for (let i = 0; i < config.modIDs.length; i++) {
-                modNames[i] = client.users.get(config.modIDs[i]).toString();
-            }
-            msg.channel.send("Mods: " + modNames.toString());
-        },
-        add: function (client, msg, args) {
-            const fs = require("fs");
-            const config = require("../config.json");
-
-            let userID = 0;
-            if (msg.mentions.members.first !== undefined) {
-                userID = msg.mentions.members.first().id;
-            }
-
-            for (let i = 0; i < config.modIDs.length; i++) {
-                if (config.modIDs[i] === userID) {
-                    msg.channel.send("User is already a mod");
-                    return;
+                for (let modID of config.modIDs) {
+                    let displayName = await client.users.fetch(config.modIDs[i]).toString();
+                    modNames.push(displayName);
                 }
+
+                msg.channel.send("Mods: " + modNames.toString());
             }
-            config.modIDs[config.modIDs.length] = userID;
-            msg.channel.send("User " + args[1] + " is now a mod");
-            fs.writeFile("./config.json", JSON.stringify(config), err => console.error(err));
         },
-        remove: function (client, msg, args) {
-            const fs = require("fs");
-            const config = require("../config.json");
+        {
+            name: "add",
+            run: (msg, args) => {
+                const fs = require("fs");
 
-            let userID = 0;
-            if (msg.mentions.members.first !== undefined) {
-                userID = msg.mentions.members.first().id;
-            }
-
-            for (let i = 0; i < config.modIDs.length; i++) {
-                if (config.modIDs[i] === userID) {
-                    config.modIDs.splice(i, 1);
-                    msg.channel.send("User " + args[1] + " is no longer a mod");
-                    fs.writeFile("./config.json", JSON.stringify(config), err => console.error(err));
-                    return;
+                let userID = 0;
+                if (msg.mentions.members.first !== undefined) {
+                    userID = msg.mentions.members.first().id;
                 }
+
+                for (let i = 0; i < config.modIDs.length; i++) {
+                    if (config.modIDs[i] === userID) {
+                        msg.channel.send("User is already a mod");
+                        return;
+                    }
+                }
+                config.modIDs[config.modIDs.length] = userID;
+                msg.channel.send("User " + msg.mentions.members.first().displayName + " is now a mod");
+                fs.writeFile("../config.json", JSON.stringify(config), err => console.error(err));
             }
-            msg.channel.send("User not found");
+        },
+        {
+            name: "remove",
+            run: (msg, args) => {
+                const fs = require("fs");
+
+                let userID = 0;
+                if (msg.mentions.members.first !== undefined) {
+                    userID = msg.mentions.members.first().id;
+                }
+
+                for (let i = 0; i < config.modIDs.length; i++) {
+                    if (config.modIDs[i] === userID) {
+                        config.modIDs.splice(i, 1);
+                        msg.channel.send("User " + args[1] + " is no longer a mod");
+                        fs.writeFile("./config.json", JSON.stringify(config), err => console.error(err));
+                        return;
+                    }
+                }
+                msg.channel.send("User not found");
+            }
         }
-    },*/
-    run(client, msg, args) {
+    ],
+
+    run(msg, args) {
 
     }
 };
