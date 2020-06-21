@@ -17,8 +17,7 @@ function getParsed(expectedType, arg, min, max) {
             return parseDecimal(arg, min, max);
         case "string":
             return arg;
-        //TODO maybe add parsing?
-        case "phrase":
+        case "query":
             return arg;
     }
 }

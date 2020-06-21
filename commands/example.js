@@ -64,7 +64,6 @@ module.exports = {
                     long: "--test-list",
                     short: "-l",
                     arg: {
-                        name: "list",
                         type: "list"
                     },
                     description: "a simple argument flag"
@@ -114,6 +113,28 @@ module.exports = {
             ],
             run: (msg, args) => {
                 msg.channel.send(`sub command sub8, listOne is ${args.listOne}, listTwo is ${args.listTwo}`);
+            }
+        },
+        {
+            name: "sub9",
+            args: [
+                {
+                    name: "query",
+                    type: "query"
+                }
+            ],
+            flags: [
+                {
+                    name: "test",
+                    long: "--test",
+                    short: "-t",
+                    arg: {
+                        type: "list"
+                    }
+                }
+            ],
+            run: (msg, args) => {
+                msg.channel.send(`sub command sub9, query is ${args.query}, test ist ${args.test}`);
             }
         }
     ],

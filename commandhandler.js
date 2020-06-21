@@ -45,33 +45,32 @@ function parseCommand(msg) {
     command = subCmdResult.command;
     let args = subCmdResult.args;
 
-    console.log(`command is ${command.name} after sub command check, args are: ${args.toString()}`);
+    try {
+        args = mergeQuery(args);
+    } catch (e) {
+        msg.channel.send(e.toString());
+    }
 
-    /*// no args needed
-    if(!needsArgs) {
-        if(command.run) {
-            command.run(msg);
-            return;
-        } else {
-            msg.channel.send("The command can't be run without arguments or sub commands")
-        }
-    }*/
+    console.log(`command is ${command.name} after sub command check, args are: ${args.toString()}`);
 
     let argsObject;
 
+    let sliceIndex;
+
     try {
-        argsObject = checkArgs(command.args, args, userPermissionLevel);
+        let {returnObj, slice} = checkArgs(command.args, args, userPermissionLevel);
+        argsObject = returnObj;
+        sliceIndex = slice;
     } catch (e) {
         msg.channel.send(e.toString());
         return;
     }
 
-    let sliceIndex = command.args ? command.args.length : 0;
-
     try {
         parseFlags(command, args.slice(sliceIndex), argsObject);
     } catch (e) {
         msg.channel.send(e.toString());
+        return;
     }
 
     command.run(msg, argsObject);
@@ -147,6 +146,7 @@ function getSubCommand(command, args, userPermissionLevel) {
 //Compares the provided args with the required args
 function checkArgs(requiredArgs, actualArgs, userPermissionLevel) {
     let returnObj = {};
+    let sliceIndex = 0;
 
     if (!requiredArgs) {
         return returnObj;
@@ -155,6 +155,24 @@ function checkArgs(requiredArgs, actualArgs, userPermissionLevel) {
     for (let i = 0; i < requiredArgs.length; i++) {
         let requiredArg = requiredArgs[i];
         let actualArg = actualArgs[i];
+
+        // the last required arg is a query, just concat all the following args that are not flags
+        if (i === requiredArgs.length - 1 && requiredArg.type === "query") {
+            let concat = "";
+
+            for (let j = i; j < actualArgs.length; j++) {
+                // check if the flags start
+                if (actualArgs[j].startsWith("-")) {
+                    break;
+                }
+                sliceIndex++;
+                concat += actualArgs[j];
+                concat += " ";
+            }
+
+            returnObj = Object.defineProperty(returnObj, requiredArg.name, {value: concat});
+            break;
+        }
 
         //No more message args, but more a required
         if (!actualArg) {
@@ -178,11 +196,12 @@ function checkArgs(requiredArgs, actualArgs, userPermissionLevel) {
         if (requiredArg.permissionLevel && requiredArg.permissionLevel > userPermissionLevel) {
             throw `${requiredArg.name}: You don't have permission to use this argument`;
         }
+        sliceIndex++;
 
         returnObj = Object.defineProperty(returnObj, requiredArg.name, {value: item});
     }
 
-    return returnObj;
+    return {returnObj: returnObj, slice: sliceIndex};
 }
 
 function parseFlags(command, args, returnObj) {
@@ -253,8 +272,8 @@ function parseShortFlag(index, args, command, returnObj) {
 }
 
 function getValueForFlag(flag, nextArg) {
-    if (!nextArg) {
-        throw `This flag needs a argument of type ${flag.arg.type}`;
+    if (flag.arg && !nextArg) {
+        throw `${flag.name}: This flag needs a argument of type ${flag.arg.type}`;
     }
 
     let value;
@@ -306,6 +325,36 @@ function loadCommands() {
 
         commands.push(command);
     }
+}
+
+function mergeQuery(args) {
+    let newArgs = [];
+
+    let currentlyInQuery = false;
+    let query = "";
+
+    for (let arg of args) {
+        if (arg.endsWith("\"") || arg.endsWith("'")) {
+            currentlyInQuery = false;
+            query += " ";
+            query += arg.substring(0, arg.length - 1);
+            newArgs.push(query);
+        } else if (arg.startsWith("\"") || arg.startsWith("'")) {
+            currentlyInQuery = true;
+            query += arg.substring(1);
+        } else if (currentlyInQuery) {
+            query += " ";
+            query += arg;
+        } else {
+            newArgs.push(arg);
+        }
+    }
+
+    if (currentlyInQuery) {
+        throw `missing a closing "`
+    }
+
+    return newArgs;
 }
 
 module.exports.parseCommand = parseCommand;
