@@ -5,7 +5,7 @@ let commands = [];
 
 loadCommands();
 
-//takes the message, parses it and executes the command
+// takes the message, parses it and executes the command
 function parseCommand(msg) {
     if (msg.author.bot) return;
     if (!msg.content.startsWith(config.prefix)) return;
@@ -143,7 +143,7 @@ function getSubCommand(command, args, userPermissionLevel) {
     return {command: newCommand, args: args};
 }
 
-//Compares the provided args with the required args
+// compares the provided args with the required args
 function checkArgs(requiredArgs, actualArgs, userPermissionLevel) {
     let returnObj = {};
     let sliceIndex = 0;
@@ -204,6 +204,7 @@ function checkArgs(requiredArgs, actualArgs, userPermissionLevel) {
     return {returnObj: returnObj, slice: sliceIndex};
 }
 
+// parses the flags
 function parseFlags(command, args, returnObj) {
     if (!command.flags) {
         return
@@ -225,6 +226,7 @@ function parseFlags(command, args, returnObj) {
     }
 }
 
+// parses a flag like --example
 function parseLongFlag(index, args, command, returnObj) {
     let arg = args[index];
 
@@ -242,6 +244,7 @@ function parseLongFlag(index, args, command, returnObj) {
     throw `${arg.substring(1, arg.length - 1)}: is not a valid flag`;
 }
 
+// parses a flag like -e
 function parseShortFlag(index, args, command, returnObj) {
     let arg = args[index];
     let shortFlags = arg.split("");
@@ -271,6 +274,7 @@ function parseShortFlag(index, args, command, returnObj) {
     return index;
 }
 
+// returns true if the flag does not need an arg or has a predefined value to return
 function getValueForFlag(flag, nextArg) {
     if (flag.arg && !nextArg) {
         throw `${flag.name}: This flag needs a argument of type ${flag.arg.type}`;
@@ -289,6 +293,7 @@ function getValueForFlag(flag, nextArg) {
     return {value: value, add: add};
 }
 
+// loads all commands in the commands folder
 function loadCommands() {
     const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
@@ -300,6 +305,7 @@ function loadCommands() {
         let newCommand = command;
         let prevSubCmd = newCommand;
 
+        // check for subcommands in extra files and load them
         while (newCommand.subcommands) {
             console.log(`new command is: ${newCommand.name}`);
             for (let subCmd of newCommand.subcommands) {
@@ -327,6 +333,7 @@ function loadCommands() {
     }
 }
 
+// merges queries to a single strings that are given in quotation marks like "this is a test query"
 function mergeQuery(args) {
     let newArgs = [];
 
