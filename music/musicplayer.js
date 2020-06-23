@@ -318,21 +318,6 @@ function getProgress() {
 async function setTextChannel(channel) {
     textChannel = channel;
 
-    let messages = await textChannel.messages.fetch({limit: 100}, true);
-
-    // while(messages.size > 0) {
-    console.log(`Found ${messages.size} messages`);
-
-    let amount = messages.size / 50;
-    for (let i = 0; i < amount + 1; i++) {
-        console.log(i);
-        await textChannel.bulkDelete(50).catch(err => {
-        });
-    }
-
-    messages = await textChannel.messages.fetch({limit: 100}, true);
-    // }
-
     config.textChannel = textChannel.id;
     fs.writeFileSync("config.json", JSON.stringify(config));
 

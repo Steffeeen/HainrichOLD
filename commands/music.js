@@ -1,7 +1,3 @@
-const mp = require("../music/musicplayer");
-
-global.musicplayer = mp;
-
 module.exports = {
     name: "music",
     description: "Everything for controlling music",
@@ -13,47 +9,47 @@ module.exports = {
             name: "play",
             aliases: ["pl", "resume"],
             args: [],
-            run: async (client, msg, args) => {
+            run: async (msg, args) => {
                 if (msg.member.voice.channel) {
                     console.log("Is in voice channel");
-                    await mp.joinChannel(msg.member.voice.channel);
+                    await musicplayer.joinChannel(msg.member.voice.channel);
                 }
 
-                if (!mp.isStreamRunning()) {
+                if (!musicplayer.isStreamRunning()) {
                     console.log("begin in music");
-                    mp.begin();
+                    musicplayer.begin();
                 } else {
                     console.log("play in music");
-                    mp.play();
+                    musicplayer.play();
                 }
             }
         }, {
             name: "pause",
             aliases: ["pa"],
             args: [],
-            run: (client, msg, {}) => {
-                mp.pause();
+            run: (msg, {}) => {
+                musicplayer.pause();
             }
         }, {
             name: "togglePause",
             aliases: ["p"],
             args: [],
-            run: (client, msg, {}) => {
-                mp.togglePause();
+            run: (msg, {}) => {
+                musicplayer.togglePause();
             }
         }, {
             name: "skip",
             aliases: ["s"],
             args: [],
-            run(client, msg, {}) {
-                mp.skip();
+            run(msg, {}) {
+                musicplayer.skip();
             }
         }, {
             name: "back",
             aliases: ["ba"],
             args: [],
-            run(client, msg, {}) {
-                mp.back();
+            run(msg, {}) {
+                musicplayer.back();
             }
         }, {
             name: "volume",
@@ -68,9 +64,9 @@ module.exports = {
             ],
             run: (msg, args) => {
                 if (args.volume) {
-                    mp.changeVolume(args.volume);
+                    musicplayer.changeVolume(args.volume);
                 } else {
-                    msg.channel.send(mp.getVolume());
+                    msg.channel.send(musicplayer.getVolume());
                 }
             }
         }, {
@@ -82,8 +78,8 @@ module.exports = {
                     type: "query",
                 }
             ],
-            run: (client, msg, args) => {
-                mp.addToQueue(args.query, msg.member);
+            run: (msg, args) => {
+                musicplayer.addToQueue(args.query, msg.member);
             }
         }, {
             name: "remove",
@@ -95,14 +91,14 @@ module.exports = {
                 }
             ],
             run: (msg, args) => {
-                msg.channel.send(mp.removeFromQueue(args.index - 1));
+                msg.channel.send(musicplayer.removeFromQueue(args.index - 1));
             }
         }, {
             name: "clear",
             aliases: ["c"],
             args: [],
             run(msg, args) {
-                mp.clearQueue();
+                musicplayer.clearQueue();
             }
         }, {
             name: "search",
@@ -114,14 +110,15 @@ module.exports = {
                 }
             ],
             run(msg, args) {
-                mp.search(args.query, msg);
+                musicplayer.search(args.query, msg);
             }
         }, {
             name: "textChannel",
+            permissionLevel: 2,
             aliases: [],
             args: [],
             run: (msg, args) => {
-                mp.setTextChannel(msg.channel);
+                musicplayer.setTextChannel(msg.channel);
                 msg.channel.send("Set this channel as the new text channel");
             }
         }],

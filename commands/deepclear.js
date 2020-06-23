@@ -6,7 +6,7 @@ module.exports = {
     args: [],
     subcommands: [],
 
-    async run(client, msg) {
+    async run(msg) {
         let channel = msg.channel;
 
         let cleared = 0;
@@ -29,7 +29,6 @@ module.exports = {
             messages = await channel.messages.fetch({limit: 100}).catch(err => {
                 console.log("encountered error fetching: " + err)
             });
-            console.log(messages);
             console.log(messages.size);
 
             console.log("cleared " + cleared);

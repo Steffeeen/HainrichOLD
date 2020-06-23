@@ -89,7 +89,7 @@ function getCommand(commandName) {
 
     //check for aliases
     for (let cmd of commands) {
-        if (cmd.aliases.includes(commandName)) {
+        if (cmd.aliases && cmd.aliases.includes(commandName)) {
             console.log(`Found command ${cmd.name} with alias ${commandName}`);
             return cmd;
         }
