@@ -7,7 +7,6 @@ const commandHandler = require("./commandhandler.js");
 
 global.config = require("./config.json");
 
-
 client.commands = new Discord.Collection();
 
 client.login(config.token);

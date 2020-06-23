@@ -307,10 +307,7 @@ function loadCommands() {
 
         // check for subcommands in extra files and load them
         while (newCommand.subcommands) {
-            console.log(`new command is: ${newCommand.name}`);
             for (let subCmd of newCommand.subcommands) {
-                console.log(`current command: ${command.name}`);
-                console.log(`current sub command: ${subCmd.name}`);
                 if (subCmd.file) {
                     let index = newCommand.subcommands.indexOf(subCmd);
 
