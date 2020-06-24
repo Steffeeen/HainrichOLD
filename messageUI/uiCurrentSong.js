@@ -1,5 +1,7 @@
 const UIComponent = require("./uiComponent");
 
+const logoUrl = "https://cdn.discordapp.com/app-icons/483665807184887808/fc97f1fbfdf28a9516aa4d84268ccb9f.png";
+
 class UICurrentSong extends UIComponent {
 
     #currentSong;
@@ -17,6 +19,7 @@ class UICurrentSong extends UIComponent {
 
         let currentPlayingDisplay = this.#currentSong ? this.#currentSong.title : "-";
         let addedByDisplay = this.#currentSong ? this.#currentSong.member.displayName : "-";
+        let imageUrl = this.#currentSong.imageUrl ? this.#currentSong.imageUrl : logoUrl;
         let progressDisplay;
 
         if (this.#progress < 0) {
@@ -29,7 +32,7 @@ class UICurrentSong extends UIComponent {
             embed: {
                 color: this.#color,
                 thumbnail: {
-                    url: 'https://i.imgur.com/wSTFkRM.png',
+                    url: imageUrl,
                 },
                 fields: [{
                     name: "Currently playing:",
