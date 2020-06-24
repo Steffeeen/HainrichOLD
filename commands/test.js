@@ -87,8 +87,30 @@ module.exports = {
             run: async (msg, args) => {
                 msg.channel.send(getProgressDisplayString(args.time));
             }
+        },
+        {
+            name: "coverArt",
+            args: [
+                {
+                    name: "query",
+                    type: "query"
+                }
+            ],
+            run: async (msg, args) => {
+                let image = await getCoverImageUrl(args.query);
+                msg.channel.send(image);
+            }
         }
     ]
+}
+
+async function getCoverImageUrl(query) {
+    const genius = require("genius-lyrics");
+    const Genius = new genius.Client(config.geniusToken);
+
+    let songs = await Genius.tracks.search(query, {onlySongs: true, limit: 1});
+    let song = songs[0];
+    return song.thumbnail;
 }
 
 function getProgressDisplayString(progress) {

@@ -2,7 +2,7 @@ module.exports = {
     name: "example",
     description: "a simple example command, that shows the capabilities of the command system",
     aliases: ["ex"],
-    permissionLevel: 1,
+    permissionLevel: 0,
     args: [
         {
             name: "number",
