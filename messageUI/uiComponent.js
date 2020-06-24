@@ -8,7 +8,7 @@ class UIComponent extends EventEmitter {
         this.content = "";
         this.reactions = reactions;
 
-        this.messageID = "";
+        this.messageID = undefined;
         this.collector = null;
         this.filter = (reaction, user) => this.reactions.includes(reaction.emoji.name) && !user.bot;
     }
@@ -18,11 +18,7 @@ class UIComponent extends EventEmitter {
             return;
         }
 
-        let message = await this.channel.messages.fetch(this.messageID, true);
-
-        console.log(message);
-
-        if (!message) {
+        if (!this.messageID) {
             this.channel.send(this.content)
                 .then(async message => {
                     this.messageID = message.id;
@@ -51,7 +47,7 @@ class UIComponent extends EventEmitter {
                 });
             });
         } else {
-            console.log(message);
+            let message = await this.channel.messages.fetch(this.messageID, true);
             await message.edit(this.content);
         }
     }
@@ -65,7 +61,7 @@ class UIComponent extends EventEmitter {
 
     async setContent(content) {
         this.content = content;
-        await this.sendMessage();
+        super.emit("contentChange");
     }
 
     async changeReaction(index, newReaction) {

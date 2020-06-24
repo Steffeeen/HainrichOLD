@@ -3,6 +3,7 @@ const queue = require("./queue.js");
 const ytSearchCallback = require("yt-search");
 const util = require("util");
 const events = require("events");
+const UIManager = require("../messageUI/uiManager");
 const UIList = require("../messageUI/uiList");
 const UICurrentSong = require("../messageUI/uiCurrentSong");
 const UIStatus = require("../messageUI/uiStatus");
@@ -22,7 +23,7 @@ client.on("disconnect", () => {
 });
 
 
-let queueUI, currentUI, statusUI;
+let uiManager, queueUI, currentUI, statusUI;
 
 let voiceChannel;
 let dispatcher;
@@ -318,6 +319,12 @@ function getProgress() {
 async function setTextChannel(channel) {
     textChannel = channel;
 
+    if (uiManager) {
+        uiManager.removeAll();
+    }
+
+    uiManager = new UIManager(textChannel);
+
     config.textChannel = textChannel.id;
     fs.writeFileSync("config.json", JSON.stringify(config));
 
@@ -339,7 +346,10 @@ async function setTextChannel(channel) {
     currentUI.on("🔁", () => cycleLoop());
 
     queueUI = new UIList(textChannel, ["The queue is empty"]);
+    queueUI.setListItems([...Array(50).keys()]);
 
+    uiManager.addComponent(currentUI);
+    uiManager.addComponent(queueUI);
     //statusUI = new UIStatus(textChannel);
 }
 
