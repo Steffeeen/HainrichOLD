@@ -4,9 +4,18 @@ const client = new Discord.Client();
 global.client = client;
 global.config = require("./config.json");
 
+// load .env file
+const result = require("dotenv").config();
+
+if (result.error) {
+    throw result.error;
+}
+
+console.log(result.parsed);
+
 const commandHandler = require("./commandhandler.js");
 
-client.login(config.token);
+client.login(process.env.DISCORD_TOKEN);
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
