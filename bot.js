@@ -11,11 +11,15 @@ if (result.error) {
     throw result.error;
 }
 
+console.log(`Using tokens:`);
 console.log(result.parsed);
 
 const commandHandler = require("./commandhandler.js");
 
-client.login(process.env.DISCORD_TOKEN);
+client.login(process.env.DISCORD_TOKEN)
+    .catch(error => {
+        console.error(`There was an error logging in, info:\n${error}`);
+    });
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
@@ -28,7 +32,6 @@ client.on('ready', () => {
 function onMessage(msg) {
     commandHandler.parseCommand(msg);
 }
-
 
 global.sleep = (ms) => {
     return new Promise(resolve => {
