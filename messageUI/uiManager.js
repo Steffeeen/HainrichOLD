@@ -1,11 +1,16 @@
-class UiManager {
+const cleanChannel = require("../util/clearchannel");
+const EventEmitter = require("events");
+
+class UiManager extends EventEmitter {
     #channel;
     #components = [];
 
     constructor(channel) {
+        super();
         clearMessages(channel).then(() => {
             this.#channel = channel;
             client.on("message", msg => handleMessage(msg, this.#channel));
+            this.emit("ready");
         });
     }
 
@@ -37,7 +42,7 @@ async function handleMessage(msg, channel) {
         return;
     }
 
-    // system messages, like when pinning a message get deleted immediately
+    // system messages, like pinning something
     if (msg.system) {
         msg.delete();
         return;
@@ -55,7 +60,7 @@ async function handleMessage(msg, channel) {
 }
 
 async function clearMessages(channel) {
-    await channel.bulkDelete(100);
+    await cleanChannel(channel);
 }
 
 module.exports = UiManager;

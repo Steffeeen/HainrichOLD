@@ -19,7 +19,7 @@ class UICurrentSong extends UIComponent {
 
         let currentPlayingDisplay = this.#currentSong ? this.#currentSong.title : "-";
         let addedByDisplay = this.#currentSong ? this.#currentSong.member.displayName : "-";
-        let imageUrl = this.#currentSong.imageUrl ? this.#currentSong.imageUrl : logoUrl;
+        let imageUrl = this.#currentSong && this.#currentSong.imageUrl ? this.#currentSong.imageUrl : logoUrl;
         let progressDisplay;
 
         if (this.#progress < 0) {

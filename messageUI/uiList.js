@@ -2,11 +2,17 @@ const UIComponent = require("./uiComponent");
 
 class UIList extends UIComponent {
 
-    constructor(channel, listItems, maxShownItems = 10) {
-        super(channel, ["⏬", "🔽", "🔼", "⏫"]);
-        this.maxShownItems = maxShownItems;
+    #listItems;
+    #currentStart;
+    #maxShownItems;
+    #emptyMessage;
 
-        this.currentStart = 0;
+    constructor(channel, listItems, maxShownItems = 10, emptyMessage = "List is empty") {
+        super(channel, ["⏬", "🔽", "🔼", "⏫"]);
+        this.#maxShownItems = maxShownItems;
+        this.#emptyMessage = emptyMessage;
+
+        this.#currentStart = 0;
 
         this.setListItems(listItems);
 
@@ -17,7 +23,7 @@ class UIList extends UIComponent {
     }
 
     scrollUp() {
-        let position = this.currentStart - this.maxShownItems;
+        let position = this.#currentStart - this.#maxShownItems;
 
         if(position >= 0) {
             this.goToPosition(position);
@@ -25,9 +31,9 @@ class UIList extends UIComponent {
     }
 
     scrollDown() {
-        let position = this.currentStart + this.maxShownItems;
+        let position = this.#currentStart + this.#maxShownItems;
 
-        if(position < this.listItems.length) {
+        if (position < this.#listItems.length) {
             this.goToPosition(position);
         }
     }
@@ -37,18 +43,18 @@ class UIList extends UIComponent {
     }
 
     scrollToBottom() {
-        let position = this.listItems.length - (this.listItems.length % 10);
+        let position = this.#listItems.length - this.#maxShownItems;
 
         this.goToPosition(position);
     }
 
     goToPosition(position) {
-        this.currentStart = position;
+        this.#currentStart = position;
 
         let content = "```\n";
-        for(let i = this.currentStart; i < this.currentStart + this.maxShownItems; i++) {
-            if(this.listItems[i] !== undefined) {
-                content += this.listItems[i];
+        for (let i = this.#currentStart; i < this.#currentStart + this.#maxShownItems; i++) {
+            if (this.#listItems[i] !== undefined) {
+                content += this.#listItems[i];
             }
             content += " \n";
         }
@@ -56,32 +62,29 @@ class UIList extends UIComponent {
         this.setContent(content);
     }
 
-    setListItems(listItems) {
-        this.listItems = listItems;
-        this.currentStart = 0;
+    setEmptyMessage(message) {
+        this.#emptyMessage = message;
 
-        let iMax = 0;
+        if (this.#listItems.length === 0) {
+            this.sendMessage();
+        }
+    }
+
+    setListItems(listItems) {
+        this.#listItems = listItems;
+        this.#currentStart = 0;
 
         let content = "```\n";
 
-        if(this.listItems) {
-            if(this.listItems.length < this.maxShownItems) {
-                iMax = this.listItems.length;
-            } else {
-                iMax = this.maxShownItems;
-            }
+        if (this.#listItems) {
+            let iMax = Math.min(this.#listItems.length, this.#maxShownItems)
 
-            console.log(iMax);
-
-            for(let i = 0; i < this.maxShownItems; i++) {
-                if(this.listItems[i] !== undefined) {
-                    content += this.listItems[i];
-                }
-                content += " \n";
+            for (let i = 0; i < iMax; i++) {
+                content += this.#listItems[i] + " \n";
             }
             content += "```";
         } else {
-            content = "```List is empty```";
+            content = "```" + this.#emptyMessage + "```";
         }
 
         this.setContent(content);
