@@ -1,8 +1,4 @@
-const ytdl = require("ytdl-core");
-const ytSearchCallback = require("yt-search");
-const util = require("util");
-
-const ytSearch = util.promisify(ytSearchCallback);
+const song = require("./song");
 
 let queue = [];
 
@@ -49,39 +45,45 @@ function hasPrevious() {
 
 //TODO add start at
 async function addSong(query, member) {
-    let urls = [];
+    let songs = song.parseSongs(query, member);
 
-    if(query.includes("youtube.com/watch")) {
-        urls.push(query);
-    } else if(query.includes("youtube.com/playlist")) {
-        //TODO
-    } else if(query.includes("open.spotify.com/playlist")) {
-        //TODO
-    } else {
-        let result = await ytSearch(query);
-        urls.push("https://www.youtube.com" + result.videos[0].url);
+    for (let song of songs) {
+        queue.push(song);
     }
+
+    updateRandomAfterAdding(songs.length);
+
+    /*let urls = linkResolver.getYoutubeSearchResults(query);
 
     for(let url of urls) {
         let allInfo = await ytdl.getBasicInfo(url);
         let info = allInfo.player_response.videoDetails;
-        //console.log(JSON.stringify(info.player_response.videoDetails));
         console.log(JSON.stringify(info));
         if(random) {
-            let remaining;
-            if(loop === 0 || loop === 2) {
-                remaining = (queue.length - 1) - currentSong;
-            } else if(loop === 1) {
-                remaining = queue.length;
-            }
-
-            let index = Math.floor((Math.random() * remaining) + currentSong + 1);
-            randomOrder.splice(index, 0, queue.length);
+            updateRandom();
         }
         totalTime += info.lengthSeconds;
-        queue.push({url: url, title: info.title, length: info.lengthSeconds, start: 0, member: member});
+
+        let imageUrl = getCoverImageUrlByQuery(query);
+
+        queue.push({url: url, title: info.title, length: info.lengthSeconds, start: 0, member: member, imageUrl: imageUrl});
 
         console.log("queue total length: " + totalTime);
+    }*/
+}
+
+function updateRandomAfterAdding(amount) {
+    let remaining;
+    // if the queue loops the new songs, can also be added at the start, if the queue does not loop only add the songs after the current one so they all get played
+    if (loop === 0 || loop === 2) {
+        remaining = (queue.length - 1) - currentSong;
+    } else if (loop === 1) {
+        remaining = queue.length;
+    }
+
+    for (let i = 0; i < amount; i++) {
+        let index = Math.floor((Math.random() * remaining) + currentSong + 1);
+        randomOrder.splice(index, 0, currentSong + i);
     }
 }
 
