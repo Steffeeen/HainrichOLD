@@ -20,8 +20,6 @@ module.exports = {
         {
             name: "add",
             run: (msg, args) => {
-                const fs = require("fs");
-
                 let userID = 0;
                 if (msg.mentions.members.first !== undefined) {
                     userID = msg.mentions.members.first().id;
@@ -34,15 +32,13 @@ module.exports = {
                     }
                 }
                 config.modIDs[config.modIDs.length] = userID;
+                updateConfig(config);
                 msg.channel.send("User " + msg.mentions.members.first().displayName + " is now a mod");
-                fs.writeFile("../config.json", JSON.stringify(config), err => console.error(err));
             }
         },
         {
             name: "remove",
             run: (msg, args) => {
-                const fs = require("fs");
-
                 let userID = 0;
                 if (msg.mentions.members.first !== undefined) {
                     userID = msg.mentions.members.first().id;
@@ -51,8 +47,8 @@ module.exports = {
                 for (let i = 0; i < config.modIDs.length; i++) {
                     if (config.modIDs[i] === userID) {
                         config.modIDs.splice(i, 1);
+                        updateConfig(config);
                         msg.channel.send("User " + args[1] + " is no longer a mod");
-                        fs.writeFile("./config.json", JSON.stringify(config), err => console.error(err));
                         return;
                     }
                 }

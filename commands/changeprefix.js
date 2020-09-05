@@ -8,10 +8,8 @@ module.exports = {
         type: "char",
     }],
     run(msg, args) {
-        const fs = require("fs");
-
         config.prefix = args.prefix;
-        fs.writeFile("./config.json", JSON.stringify(config), err => console.error(err));
+        updateConfig(config);
 
         msg.channel.send("Changed the command prefix to: " + args[0]);
     }

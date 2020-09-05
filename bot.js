@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
+const fs = require("fs");
 
 global.client = client;
 global.config = require("./config.json");
@@ -31,6 +32,11 @@ client.on('ready', () => {
 
 function onMessage(msg) {
     commandHandler.parseCommand(msg);
+}
+
+global.updateConfig = config => {
+    global.config = config;
+    fs.writeFile("./config.json", JSON.stringify(config, null, 2), (err) => console.error(err));
 }
 
 global.sleep = (ms) => {
