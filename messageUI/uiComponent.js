@@ -58,6 +58,7 @@ class UIComponent extends EventEmitter {
     async deleteMessage() {
         if (this.#messageID) {
             let message = await this.#channel.messages.fetch(this.#messageID, true);
+            this.#messageID = undefined;
             message.delete();
         }
     }

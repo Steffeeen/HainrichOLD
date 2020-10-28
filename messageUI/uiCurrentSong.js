@@ -1,11 +1,14 @@
 const UIComponent = require("./uiComponent");
+const util = require("../util/util");
 
 const logoUrl = "https://cdn.discordapp.com/app-icons/483665807184887808/fc97f1fbfdf28a9516aa4d84268ccb9f.png";
+
+const defaultColor = 0x0000ff;
 
 class UICurrentSong extends UIComponent {
 
     #currentSong;
-    #color = 0x0000ff;
+    #color = defaultColor;
     #progress = -1;
 
     constructor(channel, currentSong) {
@@ -22,10 +25,14 @@ class UICurrentSong extends UIComponent {
         let imageUrl = this.#currentSong && this.#currentSong.imageUrl ? this.#currentSong.imageUrl : logoUrl;
         let progressDisplay;
 
+        if (!this.#currentSong) {
+            this.#color = defaultColor;
+        }
+
         if (this.#progress < 0) {
             progressDisplay = "-";
         } else {
-            progressDisplay = getProgressDisplayString(this.#progress);
+            progressDisplay = util.convertSecondsToTimeString(this.#progress);
         }
 
         this.setContent({
@@ -66,30 +73,6 @@ class UICurrentSong extends UIComponent {
     }
 }
 
-function getProgressDisplayString(progress) {
-    let result = "";
 
-    let hours = progress / 3600;
-    if (hours >= 1) {
-        result += addLeadingZero(Math.round(hours));
-        result += ":";
-    }
-
-    let minutes = Math.floor(progress / 60) % 60
-    result += addLeadingZero(minutes);
-    result += ":";
-
-    let seconds = progress % 60;
-    result += addLeadingZero(seconds);
-
-    return result;
-}
-
-function addLeadingZero(number) {
-    if (`${number}`.length === 1) {
-        return `0${number}`;
-    }
-    return number;
-}
 
 module.exports = UICurrentSong;

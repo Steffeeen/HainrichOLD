@@ -50,7 +50,13 @@ async function handleMessage(msg, channel) {
 
     if (msg.author.bot) {
         await sleep(10000);
-        let newMsg = await channel.messages.fetch(msg.id, true);
+        let newMsg;
+        try {
+            newMsg = await channel.messages.fetch(msg.id, true);
+        } catch (e) {
+            return;
+        }
+
         if (!newMsg.pinned) {
             msg.delete();
         }
