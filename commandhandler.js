@@ -355,7 +355,7 @@ function mergeQuery(args) {
     }
 
     if (currentlyInQuery) {
-        throw `missing a closing "`
+        throw `missing a closing " or '`
     }
 
     return newArgs;

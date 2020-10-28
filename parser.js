@@ -31,7 +31,7 @@ function parseList(arg, min, max) {
 
     for (let arg of args) {
         if (arg.match(RANGE_REGEX)) {
-            list.push(parseRange(arg, min, max));
+            list = list.concat(parseRange(arg, min, max));
         }
 
         if (arg.match(NUMBER_REGEX)) {

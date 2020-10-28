@@ -1,5 +1,5 @@
-const Discord = require('discord.js');
-const client = new Discord.Client();
+const {Client, Intents} = require('discord.js');
+const client = new Client({ws: {intents: Intents.ALL}});
 const fs = require("fs");
 
 global.client = client;
@@ -36,7 +36,8 @@ function onMessage(msg) {
 
 global.updateConfig = config => {
     global.config = config;
-    fs.writeFile("./config.json", JSON.stringify(config, null, 2), (err) => console.error(err));
+    fs.writeFile("./config.json", JSON.stringify(config, null, 2), () => {
+    });
 }
 
 global.sleep = (ms) => {
