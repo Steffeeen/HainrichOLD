@@ -10,29 +10,30 @@ class UICurrentSong extends UIComponent {
     #currentSong;
     #color = defaultColor;
     #progress = -1;
+    #queueAmount = -1;
+    #queueLength = 0;
 
-    constructor(channel, currentSong) {
+    constructor(channel) {
         super(channel, ["🔀", "⏮", "⏯", "⏭", "🔁"]);
 
-        this.setCurrentSong(currentSong);
+        this.updateUI();
     }
 
-    setCurrentSong(song) {
-        this.#currentSong = song;
-
+    updateUI() {
         let currentPlayingDisplay = this.#currentSong ? this.#currentSong.title : "-";
         let addedByDisplay = this.#currentSong ? this.#currentSong.member.displayName : "-";
         let imageUrl = this.#currentSong && this.#currentSong.imageUrl ? this.#currentSong.imageUrl : logoUrl;
         let progressDisplay;
+        let totalLength = this.#queueAmount > 0 ? util.convertSecondsToTimeString(this.#queueLength) : "-";
 
         if (!this.#currentSong) {
             this.#color = defaultColor;
         }
 
-        if (this.#progress < 0) {
+        if (this.#progress < 0 || this.#queueAmount <= 0) {
             progressDisplay = "-";
         } else {
-            progressDisplay = util.convertSecondsToTimeString(this.#progress);
+            progressDisplay = `${this.#progress}/${this.#queueAmount}`;
         }
 
         this.setContent({
@@ -50,29 +51,35 @@ class UICurrentSong extends UIComponent {
                     value: "\u200b",
                     inline: true
                 }, {
-                    name: "Progress",
+                    name: "Queue Progress",
                     value: progressDisplay,
                     inline: true
                 }, {
                     name: "Added by:",
                     value: addedByDisplay,
                     inline: true
+                }, {
+                    name: "\u200b",
+                    value: "\u200b",
+                    inline: true
+                }, {
+                    name: "Queue Length",
+                    value: totalLength,
+                    inline: true
                 }]
             }
         });
     }
 
-    setProgress(seconds) {
-        this.#progress = seconds;
-        this.setCurrentSong(this.#currentSong);
-    }
+    update(data) {
+        if (data.song) this.#currentSong = data.song;
+        if (data.progress) this.#progress = data.progress;
+        if (data.queueLength) this.#queueLength = data.queueLength;
+        if (data.queueAmount) this.#queueAmount = data.queueAmount;
+        if (data.color) this.#color = data.color;
 
-    setColor(color) {
-        this.#color = color;
-        this.setCurrentSong(this.#currentSong);
+        this.updateUI();
     }
 }
-
-
 
 module.exports = UICurrentSong;

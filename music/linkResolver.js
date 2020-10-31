@@ -48,7 +48,9 @@ async function loadSpotifyToken() {
 
 async function getYoutubeSearchResults(query) {
     if (YOUTUBE_VIDEO_REGEX.test(query)) {
-        return [query];
+        return [{
+            url: query
+        }];
     }
 
     if (YOUTUBE_PLAYLIST_REGEX.test(query)) {
@@ -67,7 +69,7 @@ async function getYoutubeSearchResults(query) {
         return getSpotifyPlaylistLinks(query);
     }
 
-    return getYoutubeSearchLink(query);
+    return [await getYoutubeSearchLink(query)];
 }
 
 async function getYoutubeVideoLink(link) {
@@ -76,7 +78,6 @@ async function getYoutubeVideoLink(link) {
 
 async function getYoutubePlaylistLinks(link) {
     let playlistId = link.match(YOUTUBE_PLAYLIST_ID_REGEX)[1];
-    console.log(playlistId);
     let result = await youtubePlaylists.getPlaylistItems(playlistId);
     return result.items.map(item => item.videoUrl);
 }
@@ -93,7 +94,7 @@ async function getSpotifyTrackLink(link) {
         trackId = link.match(SPOTIFY_LINK_TRACK_ID_REGEX)[1];
     }
 
-    return getLinkFromSpotifyTrackId(trackId);
+    return [await getLinkFromSpotifyTrackId(trackId)];
 }
 
 async function getLinkFromSpotifyTrackId(trackId) {

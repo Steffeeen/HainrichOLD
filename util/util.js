@@ -1,25 +1,25 @@
-function convertSecondsToTimeString(progress) {
+function convertSecondsToTimeString(duration) {
     let result = "";
 
-    let hours = progress / 3600;
+    let hours = duration / 3600;
     if (hours >= 1) {
-        result += addLeadingZero(Math.round(hours));
+        result += addLeadingZero(Math.floor(hours));
         result += ":";
     }
 
-    let minutes = Math.floor(progress / 60) % 60
+    let minutes = Math.floor(duration / 60) % 60
     result += addLeadingZero(minutes);
     result += ":";
 
-    let seconds = progress % 60;
+    let seconds = duration % 60;
     result += addLeadingZero(seconds);
 
     return result;
 }
 
 function addLeadingZero(number) {
-    if (`${number}`.length === 1) {
-        return `0${number}`;
+    if (number < 10) {
+        return "0" + number;
     }
     return number;
 }

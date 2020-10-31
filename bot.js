@@ -26,6 +26,8 @@ client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
 
     global.musicplayer = require("./music/musicplayer.js");
+    const musicplayerUI = require("./music/musicplayerUI");
+    musicplayerUI.init();
 
     client.on("message", msg => onMessage(msg));
 });

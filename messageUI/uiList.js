@@ -76,7 +76,7 @@ class UIList extends UIComponent {
 
         let content = "```\n";
 
-        if (this.#listItems) {
+        if (this.#listItems && this.#listItems.length !== 0) {
             let iMax = Math.min(this.#listItems.length, this.#maxShownItems)
 
             for (let i = 0; i < iMax; i++) {

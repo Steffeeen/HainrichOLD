@@ -5,59 +5,68 @@ module.exports = {
     permissionLevel: 2,
     args: [],
     subcommands: [
+        /*
+        playback control
+         */
         {
             name: "play",
             aliases: ["pl", "resume"],
             args: [],
-            run: async (msg, args) => {
+            run: async (msg) => {
                 if (msg.member.voice.channel) {
-                    console.log("Is in voice channel");
-                    await musicplayer.joinChannel(msg.member.voice.channel);
-                }
-
-                if (!musicplayer.isStreamRunning()) {
-                    console.log("begin in music");
-                    musicplayer.begin();
+                    musicplayer.play(msg.member.voice.channel);
                 } else {
-                    console.log("play in music");
-                    musicplayer.play();
+                    msg.channel.send("You must be in a voice channel to use this command");
                 }
             }
         }, {
             name: "pause",
             aliases: ["pa"],
             args: [],
-            run: (msg, {}) => {
+            run: (msg) => {
                 musicplayer.pause();
             }
         }, {
             name: "togglePause",
             aliases: ["p"],
             args: [],
-            run: (msg, {}) => {
+            run: (msg) => {
                 musicplayer.togglePause();
             }
         }, {
             name: "skip",
             aliases: ["s"],
             args: [],
-            run(msg, {}) {
+            run(msg) {
                 musicplayer.skip();
             }
         }, {
             name: "back",
-            aliases: ["ba"],
+            aliases: ["ba", "previous", "prev"],
             args: [],
-            run(msg, {}) {
+            run: (msg) => {
                 musicplayer.back();
             }
         }, {
+            name: "jump"
+        }, {
+            name: "loop"
+        }, {
+            name: "random"
+        }, {
+            name: "fastForward"
+        }, {
+            name: "rewind"
+        }, {
+            name: "seek"
+        }, {
             name: "volume",
-            aliases: ["v"],
+            aliases: ["v", "vol"],
             args: [
                 {
                     name: "volume",
                     type: "positiveNumber",
+                    optional: true,
                     min: 0,
                     max: 100,
                 }
@@ -69,7 +78,11 @@ module.exports = {
                     msg.channel.send(musicplayer.getVolume());
                 }
             }
-        }, {
+        },
+        /*
+        queue control
+         */
+        {
             name: "add",
             aliases: ["a"],
             args: [
@@ -86,13 +99,16 @@ module.exports = {
             aliases: ["r"],
             args: [
                 {
-                    name: "index",
-                    type: "positiveNumber",
+                    name: "indices",
+                    type: "list",
                 }
             ],
             run: (msg, args) => {
-                msg.channel.send(musicplayer.removeFromQueue(args.index - 1));
+                let indices = args.indices.map(index => index - 1);
+                musicplayer.removeFromQueue(...indices);
             }
+        }, {
+            name: "move"
         }, {
             name: "clear",
             aliases: ["c"],
@@ -111,6 +127,26 @@ module.exports = {
             ],
             run(msg, args) {
                 musicplayer.search(args.query, msg);
+            }
+        },
+        /*
+        channel control
+         */
+        {
+            name: "join",
+            permissionLevel: 2,
+            run: (msg) => {
+                if (msg.member.voice.channel) {
+                    musicplayer.joinChannel(msg.member.voice.channel);
+                } else {
+                    msg.channel.send("you must be in a channel to use this command");
+                }
+            }
+        }, {
+            name: "leave",
+            permissionLevel: 2,
+            run: (msg) => {
+                musicplayer.leaveChannel();
             }
         }, {
             name: "textChannel",

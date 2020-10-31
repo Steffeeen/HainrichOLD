@@ -2,8 +2,6 @@ const song = require("./song");
 
 let queue = [];
 
-let totalTime = 0;
-
 let random = false;
 let randomOrder = [];
 
@@ -44,32 +42,14 @@ function hasPrevious() {
 }
 
 //TODO add start at
-async function addSong(query, member) {
-    let songs = song.parseSongs(query, member);
+async function addSongs(query, member) {
+    let songs = await song.parseSongs(query, member);
 
     for (let song of songs) {
         queue.push(song);
     }
 
     updateRandomAfterAdding(songs.length);
-
-    /*let urls = linkResolver.getYoutubeSearchResults(query);
-
-    for(let url of urls) {
-        let allInfo = await ytdl.getBasicInfo(url);
-        let info = allInfo.player_response.videoDetails;
-        console.log(JSON.stringify(info));
-        if(random) {
-            updateRandom();
-        }
-        totalTime += info.lengthSeconds;
-
-        let imageUrl = getCoverImageUrlByQuery(query);
-
-        queue.push({url: url, title: info.title, length: info.lengthSeconds, start: 0, member: member, imageUrl: imageUrl});
-
-        console.log("queue total length: " + totalTime);
-    }*/
 }
 
 function updateRandomAfterAdding(amount) {
@@ -87,16 +67,13 @@ function updateRandomAfterAdding(amount) {
     }
 }
 
-function removeSongByUrl(url) {
-    let songs = queue.splice(queue.indexOf(url), 1);
-    totalTime -= songs[0].length;
+function removeSongs(...indices) {
+    queue = queue.filter((value, index) => !indices.includes(index));
+    console.log("queue length:", queue.length);
 }
 
-function removeSongByIndex(index) {
-    if(index >= 0 && index < queue.length) {
-        let songs = queue.splice(index, 1);
-        totalTime -= songs[0].length;
-    }
+function removeByMember(member) {
+    queue = queue.filter(value => value.member !== member);
 }
 
 function clear() {
@@ -112,8 +89,19 @@ function reset() {
     setRandom(false);
 }
 
+function getSongAmount() {
+    return queue.length;
+}
+
+function getTotalLength() {
+    if (queue.length === 0) return 0;
+    if (queue.length === 1) return queue[0].length;
+
+    return queue.reduce((accu, curr) => accu + curr.length, 0);
+}
+
 function getNextSongToPlay() {
-    if(loop === 2) {
+    if (loop === 2) {
         return getSong(currentSong);
     } else {
         return goToNextSong();
@@ -121,8 +109,6 @@ function getNextSongToPlay() {
 }
 
 function goToSong(index) {
-    console.log("index: " + index);
-
     if(index < 0 || index >= queue.length) {
         console.log("index smaller than 0 or greater than queue length");
         return;
@@ -195,10 +181,9 @@ function cycleLoop() {
 
 module.exports = {
     getCurrentSong: getCurrentSong,
-    getCurrentSongIndex: getCurrentSongIndex,
-    addSong: addSong,
-    removeSongByIndex: removeSongByIndex,
-    removeSongByUrl: removeSongByUrl,
+    addSongs: addSongs,
+    removeSongs: removeSongs,
+    removeByMember: removeByMember,
     getQueue: getQueue,
     clear: clear,
     setRandom: setRandom,
@@ -212,5 +197,8 @@ module.exports = {
     getSong: getSong,
     hasSong: hasSong,
     hasNext: hasNext,
-    hasPrevious, hasPrevious
+    hasPrevious: hasPrevious,
+    getProgress: getCurrentSongIndex,
+    getSongAmount: getSongAmount,
+    getTotalLength: getTotalLength,
 };

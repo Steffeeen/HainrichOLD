@@ -5,7 +5,7 @@ const genius = require("genius-lyrics");
 const Genius = new genius.Client(process.env.GENIUS_TOKEN);
 
 async function parseSongs(query, member) {
-    let ytResults = linkResolver.getYoutubeSearchResults(query);
+    let ytResults = await linkResolver.getYoutubeSearchResults(query);
 
     let promises = [];
 
@@ -14,11 +14,13 @@ async function parseSongs(query, member) {
     }
 
     let results = await Promise.allSettled(promises);
+
     return results.map(result => result.value);
 }
 
 async function getSongInfo(ytSearchInfo, member) {
-    let results = await Promise.allSettled([ytdl.getBasicInfo(ytSearchInfo.url), getCoverImageUrlByQuery(ytSearchInfo.ytQuery)]);
+    let results = await Promise.allSettled([ytdl.getBasicInfo(ytSearchInfo.url)/*, getCoverImageUrlByQuery(ytSearchInfo.ytQuery)*/]);
+
     results = results.map(result => result.value);
     let info = results[0].player_response.videoDetails;
     let imageUrl = results[1];
@@ -26,7 +28,7 @@ async function getSongInfo(ytSearchInfo, member) {
     return {
         url: ytSearchInfo.url,
         title: info.title,
-        length: info.lengthSeconds,
+        length: parseInt(info.lengthSeconds),
         start: 0,
         member: member,
         imageUrl: imageUrl
@@ -39,6 +41,7 @@ async function getCoverImageUrlByQuery(query) {
         return;
     }
     let song = songs[0];
+
     return song.thumbnail;
 }
 
