@@ -73,9 +73,9 @@ class UICurrentSong extends UIComponent {
 
     update(data) {
         if (data.song) this.#currentSong = data.song;
-        if (data.progress) this.#progress = data.progress;
-        if (data.queueLength) this.#queueLength = data.queueLength;
-        if (data.queueAmount) this.#queueAmount = data.queueAmount;
+        if (data.progress !== undefined) this.#progress = data.progress;
+        if (data.queueLength !== undefined) this.#queueLength = data.queueLength;
+        if (data.queueAmount !== undefined) this.#queueAmount = data.queueAmount;
         if (data.color) this.#color = data.color;
 
         this.updateUI();
