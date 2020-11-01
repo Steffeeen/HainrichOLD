@@ -174,11 +174,15 @@ function checkArgs(requiredArgs, actualArgs, userPermissionLevel) {
             break;
         }
 
-        //No more message args, but more a required
+        //No more message args
         if (!actualArg) {
-            let missingArgs = requiredArgs.slice(i);
+            if (requiredArg.optional) {
+                return {returnObj: returnObj, slice: sliceIndex};
+            } else {
+                let missingArgs = requiredArgs.slice(i);
 
-            throw `Missing arguments: ${missingArgs.map(arg => arg.name).toString()}`;
+                throw `Missing arguments: ${missingArgs.map(arg => arg.name).toString()}`;
+            }
         }
 
         let min, max;

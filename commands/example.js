@@ -136,6 +136,18 @@ module.exports = {
             run: (msg, args) => {
                 msg.channel.send(`sub command sub9, query is ${args.query}, test ist ${args.test}`);
             }
+        }, {
+            name: "optional",
+            args: [
+                {
+                    name: "optional",
+                    type: "decimal",
+                    optional: true
+                }
+            ],
+            run: (msg, args) => {
+                msg.channel.send(`optional is ${args.optional}`);
+            }
         }
     ],
 
