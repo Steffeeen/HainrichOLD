@@ -135,12 +135,22 @@ module.exports = {
         {
             name: "join",
             permissionLevel: 2,
-            run: (msg) => {
-                if (msg.member.voice.channel) {
+            args: [
+                {
+                    name: "channel",
+                    type: "voiceChannel"
+                }
+            ],
+            run: (msg, args) => {
+                console.log(args.channel);
+                musicplayer.joinChannel(args.channel).catch(() => {
+                });
+
+                /*if (msg.member.voice.channel) {
                     musicplayer.joinChannel(msg.member.voice.channel);
                 } else {
                     msg.channel.send("you must be in a channel to use this command");
-                }
+                }*/
             }
         }, {
             name: "leave",

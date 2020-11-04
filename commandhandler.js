@@ -1,12 +1,14 @@
 const parser = require("./parser");
 const fs = require("fs");
 
+const VOICE_CHANNEL_ID_REGEX = /(?:^<#)(\d{18})(?:>$)/;
+
 let commands = [];
 
 loadCommands();
 
 // takes the message, parses it and executes the command
-function parseCommand(msg) {
+async function parseCommand(msg) {
     if (msg.author.bot) return;
     if (!msg.content.startsWith(config.prefix)) return;
 
@@ -58,11 +60,12 @@ function parseCommand(msg) {
     let sliceIndex;
 
     try {
-        let {returnObj, slice} = checkArgs(command.args, args, userPermissionLevel);
+        let {returnObj, slice} = await checkArgs(command.args, args, userPermissionLevel, msg.member);
         argsObject = returnObj;
         sliceIndex = slice;
     } catch (e) {
         msg.channel.send(e.toString());
+        console.log(e);
         return;
     }
 
@@ -144,7 +147,7 @@ function getSubCommand(command, args, userPermissionLevel) {
 }
 
 // compares the provided args with the required args
-function checkArgs(requiredArgs, actualArgs, userPermissionLevel) {
+async function checkArgs(requiredArgs, actualArgs, userPermissionLevel, member) {
     let returnObj = {};
     let sliceIndex = 0;
 
@@ -172,6 +175,43 @@ function checkArgs(requiredArgs, actualArgs, userPermissionLevel) {
 
             returnObj = Object.defineProperty(returnObj, requiredArg.name, {value: concat});
             break;
+        }
+
+        if (requiredArg.type === "voiceChannel") {
+            let channel;
+            let filteredChannel = client.channels.cache.find(channel => channel.type === "voice" && channel.name.localeCompare(actualArg, "de", {sensitivity: "accent"}) === 0);
+
+            console.log("filtered channel", filteredChannel);
+
+            if (filteredChannel) {
+                channel = filteredChannel;
+            } else if (VOICE_CHANNEL_ID_REGEX.test(actualArg)) {
+                // the user provided a channel
+                // get the channel
+                let channelId = actualArg.match(VOICE_CHANNEL_ID_REGEX)[1];
+                let tempChannel = await client.channels.fetch(channelId);
+                // check the whether the channel is a valid voice channel
+                if (!tempChannel || tempChannel.type !== "voice") {
+                    // the user provided channel is not a valid voice channel, try to take the voice channel the user is in, if possible
+                    if (member.voice.channel) {
+                        channel = member.voice.channel;
+                    } else {
+                        throw `You have to provide a valid voice channel or be in a voice channel`;
+                    }
+                } else {
+                    channel = tempChannel;
+                }
+            } else if (member.voice.channel) {
+                // the user didn't provide a channel, take the user's channel
+                channel = member.voice.channel;
+                actualArgs.splice(i, 0, "voiceChannel");
+                actualArg = "voiceChannel";
+            } else {
+                throw `You have to provide a valid voice channel or be in a voice channel`;
+            }
+
+            returnObj = Object.defineProperty(returnObj, requiredArg.name, {value: channel});
+            continue;
         }
 
         //No more message args
