@@ -57,11 +57,11 @@ function parseRange(arg, min, max) {
     }
 
     if (min && min > lowerBound) {
-        throw `${arg}: The range must be bigger than ${min}`;
+        throw `${arg}: The range must be bigger than or equal to ${min}`;
     }
 
     if (max && max < upperBound) {
-        throw `${arg}: The range must be smaller than ${max}`;
+        throw `${arg}: The range must be smaller than or equal to ${max}`;
     }
 
     let list = [];

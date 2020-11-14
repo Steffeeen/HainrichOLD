@@ -405,4 +405,11 @@ function mergeQuery(args) {
     return newArgs;
 }
 
+function modifyCommand(commandName, modifierFunction) {
+    let command = getCommand(commandName);
+    let index = commands.indexOf(command);
+    commands[index] = modifierFunction(command);
+}
+
 module.exports.parseCommand = parseCommand;
+module.exports.modifyCommand = modifyCommand;

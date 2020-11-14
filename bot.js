@@ -15,7 +15,7 @@ if (result.error) {
 console.log(`Using tokens:`);
 console.log(result.parsed);
 
-const commandHandler = require("./commandhandler.js");
+global.commandHandler = require("./commandhandler");
 
 client.login(process.env.DISCORD_TOKEN)
     .catch(error => {
@@ -25,8 +25,9 @@ client.login(process.env.DISCORD_TOKEN)
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
 
-    global.musicplayer = require("./music/musicplayer.js");
+    global.musicplayer = require("./music/musicplayer");
     const musicplayerUI = require("./music/musicplayerUI");
+    const argsUpdater = require("./music/argsUpdater");
     musicplayerUI.init();
 
     client.on("message", msg => onMessage(msg));

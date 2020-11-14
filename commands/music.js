@@ -13,11 +13,7 @@ module.exports = {
             aliases: ["pl", "resume"],
             args: [],
             run: async (msg) => {
-                if (msg.member.voice.channel) {
-                    musicplayer.play(msg.member.voice.channel);
-                } else {
-                    msg.channel.send("You must be in a voice channel to use this command");
-                }
+                musicplayer.play(msg.member.voice.channel);
             }
         }, {
             name: "pause",
@@ -101,6 +97,8 @@ module.exports = {
                 {
                     name: "indices",
                     type: "list",
+                    min: 1,
+                    max: 1
                 }
             ],
             run: (msg, args) => {
