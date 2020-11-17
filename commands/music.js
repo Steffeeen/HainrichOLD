@@ -11,9 +11,14 @@ module.exports = {
         {
             name: "play",
             aliases: ["pl", "resume"],
-            args: [],
-            run: async (msg) => {
-                musicplayer.play(msg.member.voice.channel);
+            args: [
+                {
+                    name: "channel",
+                    type: "voiceChannel"
+                }
+            ],
+            run: (msg, args) => {
+                musicplayer.play(args.channel);
             }
         }, {
             name: "pause",

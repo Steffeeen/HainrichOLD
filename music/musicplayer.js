@@ -20,18 +20,29 @@ let volume = 0.05;
 
 let leaveChannelTimer;
 
-async function play(channel) {
+async function start(channel) {
+    if (queue.isEmpty()) return;
+    if (streamRunning) return;
+
     if (!isInVoiceChannel()) {
         await joinChannel(channel);
     }
 
-    if (isPaused()) {
+    let song = queue.getNextSongToPlay();
+
+    if (song) {
+        startStream(song.url);
+        eventEmitter.emit("changeSong", queue.getCurrentSong(), queue.getProgress());
+    }
+}
+
+async function play(channel) {
+    if (isInVoiceChannel() && isPaused()) {
         resume();
         return;
     }
 
-    //TODO create a separate start function
-    nextSong();
+    start(channel);
 }
 
 function pause() {

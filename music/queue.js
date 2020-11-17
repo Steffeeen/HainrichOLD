@@ -94,10 +94,14 @@ function getSongAmount() {
 }
 
 function getTotalLength() {
-    if (queue.length === 0) return 0;
+    if (isEmpty()) return 0;
     if (queue.length === 1) return queue[0].length;
 
     return queue.reduce((accu, curr) => accu + curr.length, 0);
+}
+
+function isEmpty() {
+    return queue.length === 0;
 }
 
 function getNextSongToPlay() {
@@ -201,4 +205,5 @@ module.exports = {
     getProgress: getCurrentSongIndex,
     getSongAmount: getSongAmount,
     getTotalLength: getTotalLength,
+    isEmpty: isEmpty,
 };
