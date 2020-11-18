@@ -20,6 +20,10 @@ let volume = 0.05;
 
 let leaveChannelTimer;
 
+// used to check whether the stream ended because of user interaction
+// used to automatically play the next song in the queue
+let wasUser = false;
+
 async function start(channel) {
     if (queue.isEmpty()) return;
     if (streamRunning) return;
@@ -89,6 +93,7 @@ function nextSong() {
 }
 
 function goToSong(index) {
+    wasUser = true;
     stopStream();
 
     startStream(queue.goToSong(index).url);
@@ -97,6 +102,7 @@ function goToSong(index) {
 
 function skip() {
     if(queue.hasNext()) {
+        wasUser = true;
         stopStream();
 
         startStream(queue.goToNextSong().url);
@@ -105,7 +111,8 @@ function skip() {
 }
 
 function back() {
-    if(queue.hasPrevious()) {
+    if (queue.hasPrevious()) {
+        wasUser = true;
         stopStream();
 
         startStream(queue.goToPrevSong().url);
@@ -126,12 +133,14 @@ function startStream(url) {
             passes: config.passes,
             seek: queue.getCurrentSong().start
         });
+        console.log("started stream");
         streamRunning = true;
-        console.log("started playing");
+
         dispatcher.on("finish", reason => {
-            console.log("stream ended: " + reason);
-            if (reason !== "user") {
+            console.log(`was user? ${wasUser}`);
+            if (!wasUser) {
                 nextSong();
+                wasUser = false;
             }
         });
     }
@@ -183,7 +192,6 @@ async function addToQueue(songs, member) {
 
 function removeFromQueue(...indices) {
     queue.removeSongs(...indices);
-    console.log("remove from queue");
     eventEmitter.emit("queueChange", queue);
 }
 
@@ -215,7 +223,7 @@ async function joinChannel(channel) {
 
 function leaveChannel() {
     if (voiceChannel) {
-        stop();
+        //stop();
         stopStream();
         voiceChannel.leave();
         voiceChannel = undefined;

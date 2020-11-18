@@ -8,6 +8,6 @@ module.exports = {
             msg.channel.send("I'm not in a voice channel");
             return;
         }
-        msg.member.voice.setChannel(voiceChannel);
+        msg.member.voice.setChannel(voiceChannel).catch(err => console.error(err));
     }
 }

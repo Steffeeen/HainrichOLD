@@ -49,7 +49,19 @@ module.exports = {
                 musicplayer.back();
             }
         }, {
-            name: "jump"
+            name: "jump",
+            aliases: ["j", "goTo", "goto"],
+            args: [
+                {
+                    name: "index",
+                    type: "positiveNumber",
+                    min: 1,
+                    max: 1
+                }
+            ],
+            run: (msg, args) => {
+                musicplayer.goToSong(args.index - 1);
+            }
         }, {
             name: "loop"
         }, {
@@ -76,7 +88,7 @@ module.exports = {
                 if (args.volume) {
                     musicplayer.changeVolume(args.volume);
                 } else {
-                    msg.channel.send(musicplayer.getVolume());
+                    msg.channel.send(`Current Volume: ${musicplayer.getVolume()}`);
                 }
             }
         },
