@@ -148,6 +148,18 @@ module.exports = {
             run: (msg, args) => {
                 msg.channel.send(`optional is ${args.optional}`);
             }
+        }, {
+            name: "value",
+            args: [
+                {
+                    name: "value",
+                    type: "value",
+                    values: ["test1", "test2"]
+                }
+            ],
+            run: (msg, args) => {
+                msg.channel.send(`value is: ${args.value}`);
+            }
         }
     ],
 

@@ -225,17 +225,7 @@ async function checkArgs(requiredArgs, actualArgs, userPermissionLevel, member) 
             }
         }
 
-        let min, max;
-
-        if (requiredArg.min) {
-            min = requiredArg.min;
-        }
-
-        if (requiredArg.max) {
-            max = requiredArg.max;
-        }
-
-        let item = parser.getParsed(requiredArg.type, actualArg, min, max);
+        let item = parser.getParsed(requiredArg, actualArg);
 
         if (requiredArg.permissionLevel && requiredArg.permissionLevel > userPermissionLevel) {
             throw `${requiredArg.name}: You don't have permission to use this argument`;
