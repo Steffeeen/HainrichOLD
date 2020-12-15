@@ -362,7 +362,7 @@ function loadCommandsInDir(path) {
                 if (subCmd.file) {
                     let index = newCommand.subcommands.indexOf(subCmd);
 
-                    newCommand.subcommands[index] = require(`./commands/${subCmd.file}`);
+                    newCommand.subcommands[index] = require(`${path}/${subCmd.file}`);
 
                     prevSubCmd = newCommand;
                     newCommand = newCommand.subcommands[index];
