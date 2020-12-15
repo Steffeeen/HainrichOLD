@@ -1,22 +1,51 @@
 const fs = require("fs");
 
-exports.getHelpMessage = (command) => {
-    try {
-        let commandFile = require("./commands/" + command + ".js");
-        return `${command}: /${command} ${commandFile.args} \n${commandFile.description}`;
-    } catch(err) {
-        return "Command not found!";
+function getCommandHelp(command) {
+    return {
+        embed: {
+            color: 0x0000ff,
+            title: `Help for ${command.name}`,
+            description: `${command.description ? command.description : ""}\nSyntax: ${getCommandSyntax(command)}`,
+            fields: getSubcommandList(command)
+        }
     }
-};
+}
 
-exports.getHelp = () => {
-    let message = "--------------Help--------------";
+function getCommandSyntax(command) {
+    let argList = [];
 
-    let files = fs.readdirSync("./commands/");
-    for(let file of files) {
-        let commandFile = require("./commands/" + file);
-        let command = file.slice(0, -3);
-        message = message.concat("\n---------------------------------- \n", `${command}: /${command} ${commandFile.args} \n${commandFile.description}`);
+    if (command.args) {
+        argList = command.args.map(arg => {
+            return arg.optional ? `[${arg.name}]` : arg.name;
+        });
     }
-    return message;
-};
+
+    return `${command.name} ${argList.join(" ")}`;
+}
+
+function getSubcommandList(command) {
+    if (!command.subcommands) {
+        return [];
+    }
+
+    return command.subcommands.map(cmd => {
+        return {
+            name: cmd.name,
+            value: cmd.description ? cmd.description : "No description available"
+        }
+    });
+}
+
+function getHelp(commands, permissionLevel) {
+    let filteredCommands = commands.filter(cmd => cmd.permissionLevel <= permissionLevel);
+    return {
+        embed: {
+            color: 0x0000ff,
+            title: `Currently available commands:`,
+            description: filteredCommands.map(cmd => cmd.name).join(", ")
+        }
+    };
+}
+
+module.exports.getHelp = getHelp;
+module.exports.getCommandHelp = getCommandHelp;

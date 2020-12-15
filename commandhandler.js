@@ -1,5 +1,6 @@
 const parser = require("./parser");
 const fs = require("fs");
+const helper = require("./helper");
 
 const VOICE_CHANNEL_ID_REGEX = /(?:^<#)(\d{18})(?:>$)/;
 
@@ -76,7 +77,7 @@ async function parseCommand(msg) {
         return;
     }
 
-    command.run(msg, argsObject);
+    command.run(msg, argsObject, {permissionLevel: userPermissionLevel});
 }
 
 // gets the base command
@@ -418,5 +419,27 @@ function modifyCommand(commandName, modifierFunction) {
     commands[index] = modifierFunction(command);
 }
 
+function getHelp(permissionLevel) {
+    if (!permissionLevel) {
+        permissionLevel = 0;
+    }
+    return helper.getHelp(commands, permissionLevel);
+}
+
+function getCommandHelp(commandName, permissionLevel) {
+    let command = getCommand(commandName);
+    if (!command) {
+        return `Could not find a command with the name ${commandName}`;
+    }
+
+    if (permissionLevel < command.permissionLevel) {
+        return `You don't have permission to view this command`;
+    }
+
+    return helper.getCommandHelp(command);
+}
+
 module.exports.parseCommand = parseCommand;
 module.exports.modifyCommand = modifyCommand;
+module.exports.getHelp = getHelp;
+module.exports.getCommandHelp = getCommandHelp;
