@@ -172,14 +172,30 @@ function toggleRandom() {
 }
 
 function setLoop(l) {
-    loop = l;
+    if (Number.isInteger(l)) {
+        loop = l;
+        return;
+    }
+
+    if (typeof l === "string") {
+        switch (l) {
+            case "none":
+                loop = 0;
+                break;
+            case "queue":
+                loop = 1;
+                break;
+            case "song":
+                loop = 2;
+                break;
+        }
+    }
 }
 
 function cycleLoop() {
-    setLoop(loop + 1);
-    if(loop === 3) {
-        setLoop(0);
-    }
+    loop++;
+    loop %= 3;
+    setLoop(loop);
     return loop;
 }
 

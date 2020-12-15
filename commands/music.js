@@ -63,7 +63,27 @@ module.exports = {
                 musicplayer.goToSong(args.index - 1);
             }
         }, {
-            name: "loop"
+            name: "loop",
+            aliases: ["lo", "l"],
+            args: [
+                {
+                    name: "loop",
+                    type: "value",
+                    values: ["none", "queue", "song"],
+                    optional: true
+                }
+            ],
+            run: (msg, args) => {
+                if (args.loop) {
+                    musicplayer.setLoop(args.loop);
+                    msg.channel.send(`Changing loop mode to ${args.loop}`);
+                } else {
+                    // TODO create central method for converting loop mode to string
+                    let loopMode = ["none", "queue", "song"];
+                    let result = musicplayer.cycleLoop();
+                    msg.channel.send(`Changing loop mode to ${loopMode[result]}`);
+                }
+            }
         }, {
             name: "random"
         }, {

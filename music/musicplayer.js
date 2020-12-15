@@ -76,7 +76,11 @@ function toggleRandom() {
 }
 
 function cycleLoop() {
-    queue.cycleLoop();
+    return queue.cycleLoop();
+}
+
+function setLoop(loop) {
+    queue.setLoop(loop);
 }
 
 function nextSong() {
@@ -293,6 +297,8 @@ module.exports.getVolume = getVolume;
 module.exports.back = back;
 module.exports.skip = skip;
 module.exports.goToSong = goToSong;
+module.exports.cycleLoop = cycleLoop;
+module.exports.setLoop = setLoop;
 module.exports.play = play;
 module.exports.pause = pause;
 module.exports.togglePause = togglePause;
