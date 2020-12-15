@@ -329,12 +329,29 @@ function getValueForFlag(flag, nextArg) {
 
 // loads all commands in the commands folder
 function loadCommands() {
-    const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+    loadCommandsInDir("./commands");
 
-    console.log(`Found ${commandFiles.length} commands`);
+    console.log(`Loaded ${commands.length} commands`);
+}
 
-    for (const file of commandFiles) {
-        const command = require(`./commands/${file}`);
+function loadCommandsInDir(path) {
+    const files = fs.readdirSync(path);
+
+    for (const file of files) {
+        if (fs.lstatSync(`${path}/${file}`).isDirectory()) {
+            loadCommandsInDir(`${path}/${file}`);
+            continue;
+        }
+
+        if (!file.endsWith(".js")) {
+            continue;
+        }
+
+        const command = require(`${path}/${file}`);
+
+        if (command.type && command.type === "subcommand") {
+            continue;
+        }
 
         let newCommand = command;
         let prevSubCmd = newCommand;

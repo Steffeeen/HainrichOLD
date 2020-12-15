@@ -1,4 +1,6 @@
 module.exports = {
+    // mark this as a subcommand, so that it doesn't get loaded as a normal command
+    type: "subcommand",
     name: "sub4",
     permissionLevel: 2,
     run: (msg) => {
