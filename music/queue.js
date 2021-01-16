@@ -1,4 +1,6 @@
 const song = require("./song");
+const {v4: uuidv4} = require("uuid");
+const songLoader = require("./songLoader");
 
 let queue = [];
 
@@ -46,7 +48,9 @@ async function addSongs(query, member) {
     let songs = await song.parseSongs(query, member);
 
     for (let song of songs) {
+        song.uuid = uuidv4();
         queue.push(song);
+        songLoader.queueSong(song);
     }
 
     updateRandomAfterAdding(songs.length);

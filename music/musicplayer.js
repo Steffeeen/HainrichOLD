@@ -1,6 +1,7 @@
 const ytdl = require("ytdl-core");
 const queue = require("./queue.js");
 const ytSearchCallback = require("yt-search");
+const songLoader = require("./songLoader");
 const nodeUtil = require("util");
 const events = require("events");
 
@@ -35,7 +36,7 @@ async function start(channel) {
     let song = queue.getNextSongToPlay();
 
     if (song) {
-        startStream(song.url);
+        startStream(song);
         eventEmitter.emit("changeSong", queue.getCurrentSong(), queue.getProgress());
     }
 }
@@ -89,7 +90,7 @@ function nextSong() {
     let nextSong = queue.getNextSongToPlay();
 
     if (nextSong) {
-        startStream(nextSong.url);
+        startStream(nextSong);
         eventEmitter.emit("changeSong", queue.getCurrentSong(), queue.getProgress());
     } else {
         console.log(`next song is undefined`);
@@ -100,7 +101,7 @@ function goToSong(index) {
     wasUser = true;
     stopStream();
 
-    startStream(queue.goToSong(index).url);
+    startStream(queue.goToSong(index));
     eventEmitter.emit("changeSong", queue.getCurrentSong(), queue.getProgress());
 }
 
@@ -109,7 +110,7 @@ function skip() {
         wasUser = true;
         stopStream();
 
-        startStream(queue.goToNextSong().url);
+        startStream(queue.goToNextSong());
         eventEmitter.emit("changeSong", queue.getCurrentSong(), queue.getProgress());
     }
 }
@@ -119,7 +120,7 @@ function back() {
         wasUser = true;
         stopStream();
 
-        startStream(queue.goToPrevSong().url);
+        startStream(queue.goToPrevSong());
         eventEmitter.emit("changeSong", queue.getCurrentSong(), queue.getProgress());
     }
 }
@@ -129,10 +130,11 @@ function isPaused() {
     return false;
 }
 
-function startStream(url) {
+async function startStream(song) {
     if (voiceConnection) {
-        console.log("url: " + url);
-        dispatcher = voiceConnection.play(ytdl(url, {filter: "audioonly"}), {
+        let file = await songLoader.getFile(song);
+        console.log(`playing ${file}`);
+        dispatcher = voiceConnection.play(file, {
             volume: volume,
             passes: config.passes,
             seek: queue.getCurrentSong().start
