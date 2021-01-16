@@ -60,7 +60,15 @@ musicplayer
         const collector = textChannel.createMessageCollector(filter, {time: 30000});
 
         collector.on("collect", async m => {
-            let indices = parser.getParsed("list", m.content, 1, 20);
+            let indices = parser.getParsed({
+                type: "list",
+                min: 1,
+                max: 20
+            }, m.content);
+
+            if (indices.length === 0) {
+                return;
+            }
 
             let songs = indices.map(index => {
                 return {
