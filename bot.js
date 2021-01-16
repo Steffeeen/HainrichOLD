@@ -1,6 +1,7 @@
 const {Client, Intents} = require('discord.js');
 const client = new Client({ws: {intents: Intents.ALL}});
 const fs = require("fs");
+const {InternalError} = require("./error");
 
 global.client = client;
 global.config = require("./config.json");
@@ -9,7 +10,7 @@ global.config = require("./config.json");
 const result = require("dotenv").config();
 
 if (result.error) {
-    throw result.error;
+    throw new InternalError(result.error);
 }
 
 console.log(`Using tokens:`);

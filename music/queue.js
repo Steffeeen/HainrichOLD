@@ -1,6 +1,7 @@
 const song = require("./song");
 const {v4: uuidv4} = require("uuid");
 const songLoader = require("./songLoader");
+const {InternalError} = require("../error");
 
 let queue = [];
 
@@ -178,7 +179,7 @@ function toggleRandom() {
 function setLoop(l) {
     if (Number.isInteger(l)) {
         if (l < 0 || l > 2) {
-            throw `Invalid loop number`;
+            throw new InternalError(`Invalid loop number`);
         }
         loop = l;
         return;

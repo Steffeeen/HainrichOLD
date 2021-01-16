@@ -1,6 +1,7 @@
 const parser = require("./parser");
 const fs = require("fs");
 const helper = require("./helper");
+const {UserError} = require("./error");
 
 const VOICE_CHANNEL_ID_REGEX = /(?:^<#)(\d{18})(?:>$)/;
 
@@ -17,67 +18,29 @@ async function parseCommand(msg) {
     const messageArgs = msg.content.slice(config.prefix.length).trim().split(/ +/g);
     const commandName = messageArgs.shift().toLowerCase();
 
-    let command = getCommand(commandName);
-
-    // no command or alias found
-    if (!command) {
-        msg.channel.send("Command not found");
-        return;
-    }
-
-    let userPermissionLevel = getPermissionLevel(msg);
-
-    console.log(`Required permission level: ${command.permissionLevel}, user permission level: ${userPermissionLevel}`);
-
-    if (command.permissionLevel > userPermissionLevel) {
-        msg.channel.send("You don't have permission to use this command");
-        return;
-    }
-
-    let subCmdResult;
-
     try {
-        subCmdResult = getSubCommand(command, messageArgs, userPermissionLevel);
-    } catch (e) {
-        // error if the user doesn't have sufficient permissions
-        console.log("error getting sub command");
-        msg.channel.send(e.toString());
-        return;
-    }
+        let command = getCommand(commandName);
 
-    command = subCmdResult.command;
-    let args = subCmdResult.args;
+        let userPermissionLevel = checkPermissionLevel(msg, command);
 
-    try {
-        args = mergeQuery(args);
-    } catch (e) {
-        msg.channel.send(e.toString());
-    }
+        let subCmdResult = getSubCommand(command, messageArgs, userPermissionLevel);
 
-    console.log(`command is ${command.name} after sub command check, args are: ${args.toString()}`);
+        command = subCmdResult.command;
+        let args = mergeQuery(subCmdResult.args);
 
-    let argsObject;
+        console.log(`command is ${command.name} after sub command check, args are: ${args.toString()}`);
 
-    let sliceIndex;
-
-    try {
         let {returnObj, slice} = await checkArgs(command.args, args, userPermissionLevel, msg.member);
-        argsObject = returnObj;
-        sliceIndex = slice;
-    } catch (e) {
-        msg.channel.send(e.toString());
-        console.log(e);
-        return;
-    }
+        let argsObject = returnObj;
 
-    try {
-        parseFlags(command, args.slice(sliceIndex), argsObject);
-    } catch (e) {
-        msg.channel.send(e.toString());
-        return;
-    }
+        parseFlags(command, args.slice(slice), argsObject);
 
-    command.run(msg, argsObject, {permissionLevel: userPermissionLevel});
+        command.run(msg, argsObject, {permissionLevel: userPermissionLevel});
+    } catch (error) {
+        if (error instanceof UserError) {
+            msg.channel.send(error.message);
+        }
+    }
 }
 
 // gets the base command
@@ -99,17 +62,21 @@ function getCommand(commandName) {
         }
     }
 
-    return null;
+    throw new UserError("Command not found");
 }
 
 // get the permission level for the command sender
-function getPermissionLevel(msg) {
+function checkPermissionLevel(msg, command) {
     let userPermissionLevel = 0;
 
     if (msg.author.id === config.ownerID) userPermissionLevel = 100000;
 
     if (config.modIDs.includes(msg.author.id)) {
         userPermissionLevel = 1;
+    }
+
+    if (command.permissionLevel > userPermissionLevel) {
+        throw new UserError("You don't have permission to use this command");
     }
 
     return userPermissionLevel;
@@ -127,7 +94,7 @@ function getSubCommand(command, args, userPermissionLevel) {
         for (let subCmd of newCommand.subcommands) {
             if (subCmd.name === subCmdName || (subCmd.aliases && subCmd.aliases.includes(subCmdName))) {
                 if (subCmd.permissionLevel && subCmd.permissionLevel > userPermissionLevel) {
-                    throw "You don't have permission to use this sub command";
+                    throw new UserError("You don't have permission to use this sub command");
                 }
 
                 prevSubCmd = newCommand;
@@ -197,7 +164,7 @@ async function checkArgs(requiredArgs, actualArgs, userPermissionLevel, member) 
                     if (member.voice.channel) {
                         channel = member.voice.channel;
                     } else {
-                        throw `You have to provide a valid voice channel or be in a voice channel`;
+                        throw new UserError(`You have to provide a valid voice channel or be in a voice channel`);
                     }
                 } else {
                     channel = tempChannel;
@@ -208,7 +175,7 @@ async function checkArgs(requiredArgs, actualArgs, userPermissionLevel, member) 
                 actualArgs.splice(i, 0, "voiceChannel");
                 actualArg = "voiceChannel";
             } else {
-                throw `You have to provide a valid voice channel or be in a voice channel`;
+                throw new UserError(`You have to provide a valid voice channel or be in a voice channel`);
             }
 
             returnObj = Object.defineProperty(returnObj, requiredArg.name, {value: channel});
@@ -222,14 +189,14 @@ async function checkArgs(requiredArgs, actualArgs, userPermissionLevel, member) 
             } else {
                 let missingArgs = requiredArgs.slice(i);
 
-                throw `Missing arguments: ${missingArgs.map(arg => arg.name).toString()}`;
+                throw new UserError(`Missing arguments: ${missingArgs.map(arg => arg.name).toString()}`);
             }
         }
 
         let item = parser.getParsed(requiredArg, actualArg);
 
         if (requiredArg.permissionLevel && requiredArg.permissionLevel > userPermissionLevel) {
-            throw `${requiredArg.name}: You don't have permission to use this argument`;
+            throw new UserError(`${requiredArg.name}: You don't have permission to use this argument`);
         }
         sliceIndex++;
 
@@ -276,7 +243,7 @@ function parseLongFlag(index, args, command, returnObj) {
         }
     }
 
-    throw `${arg.substring(1, arg.length - 1)}: is not a valid flag`;
+    throw new UserError(`${arg.substring(1, arg.length - 1)}: is not a valid flag`);
 }
 
 // parses a flag like -e
@@ -302,7 +269,7 @@ function parseShortFlag(index, args, command, returnObj) {
         }
 
         if (!valid) {
-            throw `${arg.substring(1, arg.length)}: is not a valid combination of flags`;
+            throw new UserError(`${arg.substring(1, arg.length)}: is not a valid combination of flags`);
         }
     }
 
@@ -312,7 +279,7 @@ function parseShortFlag(index, args, command, returnObj) {
 // returns true if the flag does not need an arg or has a predefined value to return
 function getValueForFlag(flag, nextArg) {
     if (flag.arg && !nextArg) {
-        throw `${flag.name}: This flag needs a argument of type ${flag.arg.type}`;
+        throw new UserError(`${flag.name}: This flag needs a argument of type ${flag.arg.type}`);
     }
 
     let value;
@@ -407,7 +374,7 @@ function mergeQuery(args) {
     }
 
     if (currentlyInQuery) {
-        throw `missing a closing " or '`
+        throw new UserError(`missing a closing " or '`);
     }
 
     return newArgs;
