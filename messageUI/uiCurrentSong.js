@@ -21,7 +21,7 @@ class UICurrentSong extends UIComponent {
 
     updateUI() {
         let currentPlayingDisplay = this.#currentSong ? this.#currentSong.title : "-";
-        let addedByDisplay = this.#currentSong ? this.#currentSong.member.displayName : "-";
+        let addedByDisplay = this.#currentSong && this.#currentSong.member ? this.#currentSong.member.username : "-";
         let imageUrl = this.#currentSong && this.#currentSong.imageUrl ? this.#currentSong.imageUrl : logoUrl;
         let progressDisplay;
         let totalLength = this.#queueAmount > 0 ? util.convertSecondsToTimeString(this.#queueLength) : "-";
