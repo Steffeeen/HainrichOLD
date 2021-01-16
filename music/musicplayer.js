@@ -17,7 +17,8 @@ let dispatcher;
 
 let streamRunning = false;
 
-let volume = 0.05;
+const volumeMultiplier = 500;
+let volume = 0.1;
 
 let leaveChannelTimer;
 
@@ -174,12 +175,15 @@ function fadeVolume(volume) {
 
 //0 - 100 50 is normal
 function changeVolume(v) {
-    volume = v / 1000;
+    if (v < 0 || v > 100) {
+        return;
+    }
+    volume = v / volumeMultiplier;
     dispatcher.setVolume(volume);
 }
 
 function getVolume() {
-    return volume * 1000;
+    return volume * volumeMultiplier;
 }
 
 async function addToQueue(songs, member) {
