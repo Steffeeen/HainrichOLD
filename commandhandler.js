@@ -182,13 +182,37 @@ async function checkArgs(requiredArgs, actualArgs, userPermissionLevel, member) 
             continue;
         }
 
+        // union args
+        if (requiredArg.type === "union") {
+            let item;
+            for (let allowedArg of requiredArg.allowedArgs) {
+                try {
+                    item = parser.getParsed(allowedArg, actualArg);
+                } catch (e) {
+                    // we got an error parsing, the actualArg is not valid for this type, move on to next
+                    continue;
+                }
+                break;
+            }
+            if (!item) {
+                // item is undefined, the actualArg didn't match any of the union types
+                throw new UserError(`${actualArg}: the provided argument doesn't match any of the following allowed types: ${requiredArg.allowedArgs.map(arg => arg.type)}`);
+            }
+
+            // we found an arg
+            sliceIndex++;
+            returnObj = Object.defineProperty(returnObj, requiredArg.name, {value: item});
+            continue;
+        }
+
         //No more message args
         if (!actualArg) {
             if (requiredArg.optional) {
+                // the required arg is optional
                 return {returnObj: returnObj, slice: sliceIndex};
             } else {
+                // the arg is required, send an error message to the user
                 let missingArgs = requiredArgs.slice(i);
-
                 throw new UserError(`Missing arguments: ${missingArgs.map(arg => arg.name).toString()}`);
             }
         }

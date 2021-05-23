@@ -160,6 +160,24 @@ module.exports = {
             run: (msg, args) => {
                 msg.channel.send(`value is: ${args.value}`);
             }
+        }, {
+            name: "union",
+            args: [
+                {
+                    name: "union",
+                    type: "union",
+                    allowedArgs: [
+                        {
+                            type: "value",
+                            values: ["test1", "test2"]
+                        }, {
+                            type: "wholeNumber",
+                            min: 1,
+                            max: 10
+                        }
+                    ]
+                }
+            ]
         }
     ],
 
