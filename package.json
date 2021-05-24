@@ -4,7 +4,8 @@
   "description": "",
   "main": "bot.js",
   "scripts": {
-    "start": "node --inspect --trace-warnings bot.js"
+    "start": "node --inspect --trace-warnings bot.js",
+    "test": "jest"
   },
   "dependencies": {
     "@discordjs/opus": "^0.1.0",
@@ -22,7 +23,6 @@
     "ytdl-core": "^4.4.3",
     "ytdl-core-discord": "^1.2.4"
   },
-  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Steffeeen/Hainrich.git"
@@ -32,5 +32,8 @@
   "bugs": {
     "url": "https://github.com/Steffeeen/Hainrich/issues"
   },
-  "homepage": "https://github.com/Steffeeen/Hainrich#readme"
+  "homepage": "https://github.com/Steffeeen/Hainrich#readme",
+  "devDependencies": {
+    "jest": "^26.6.3"
+  }
 }
