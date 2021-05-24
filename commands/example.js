@@ -177,7 +177,10 @@ module.exports = {
                         }
                     ]
                 }
-            ]
+            ],
+            run: (msg, args) => {
+                msg.channel.send(`example union ${args.union.type} ${args.union.value}`);
+            }
         }
     ],
 

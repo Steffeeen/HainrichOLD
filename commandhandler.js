@@ -182,9 +182,22 @@ async function checkArgs(requiredArgs, actualArgs, userPermissionLevel, member) 
             continue;
         }
 
+        //No more message args
+        if (!actualArg) {
+            if (requiredArg.optional) {
+                // the required arg is optional
+                return {returnObj: returnObj, slice: sliceIndex};
+            } else {
+                // the arg is required, send an error message to the user
+                let missingArgs = requiredArgs.slice(i).filter(arg => !arg.optional);
+                throw new UserError(`Missing arguments: ${missingArgs.map(arg => arg.name).toString()}`);
+            }
+        }
+
         // union args
         if (requiredArg.type === "union") {
             let item;
+            let type;
             for (let allowedArg of requiredArg.allowedArgs) {
                 try {
                     item = parser.getParsed(allowedArg, actualArg);
@@ -192,6 +205,8 @@ async function checkArgs(requiredArgs, actualArgs, userPermissionLevel, member) 
                     // we got an error parsing, the actualArg is not valid for this type, move on to next
                     continue;
                 }
+                // successfully parsed arg, break
+                type = allowedArg.type;
                 break;
             }
             if (!item) {
@@ -201,20 +216,8 @@ async function checkArgs(requiredArgs, actualArgs, userPermissionLevel, member) 
 
             // we found an arg
             sliceIndex++;
-            returnObj = Object.defineProperty(returnObj, requiredArg.name, {value: item});
+            returnObj = Object.defineProperty(returnObj, requiredArg.name, {value: {type, value: item}});
             continue;
-        }
-
-        //No more message args
-        if (!actualArg) {
-            if (requiredArg.optional) {
-                // the required arg is optional
-                return {returnObj: returnObj, slice: sliceIndex};
-            } else {
-                // the arg is required, send an error message to the user
-                let missingArgs = requiredArgs.slice(i);
-                throw new UserError(`Missing arguments: ${missingArgs.map(arg => arg.name).toString()}`);
-            }
         }
 
         let item = parser.getParsed(requiredArg, actualArg);
