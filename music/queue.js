@@ -74,7 +74,6 @@ function updateRandomAfterAdding(amount) {
 
 function removeSongs(...indices) {
     queue = queue.filter((value, index) => !indices.includes(index));
-    console.log("queue length:", queue.length);
 }
 
 function removeByMember(member) {
@@ -119,19 +118,16 @@ function getNextSongToPlay() {
 
 function goToSong(index) {
     if(index < 0 || index >= queue.length) {
-        console.log("index smaller than 0 or greater than queue length");
         return;
     }
 
     //End of queue without looping
     if(loop === 0 && index >= queue.length) {
-        console.log("end of queue without looping");
         return;
     }
 
     //End of queue with looping
     if(loop === 1 && index >= queue.length) {
-        console.log("end of queue with looping");
         currentSong = 0;
         return getSong(currentSong);
     }

@@ -14,7 +14,7 @@ async function clearChannel(textChannel) {
         }
 
         messages = await textChannel.messages.fetch({limit: 100})
-            .catch(err => console.log(err));
+            .catch(err => logger.error(err));
     }
 
     return cleared;

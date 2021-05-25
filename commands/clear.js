@@ -22,9 +22,7 @@ module.exports = {
             }
 
             let amount = msg.channel.messages.holds;
-            console.log("messages amount: " + amount);
             let count = amount / 100;
-            console.log(count);
 
             clearMessages(count, msg).then(cleared => {
                 msg.channel.send(`Cleared ${cleared} messages`);

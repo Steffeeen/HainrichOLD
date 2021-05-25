@@ -177,7 +177,6 @@ module.exports = {
                 }
             ],
             run: (msg, args) => {
-                console.log(args.channel);
                 musicplayer.joinChannel(args.channel).catch(() => {
                 });
 

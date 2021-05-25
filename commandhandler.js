@@ -28,7 +28,7 @@ async function parseCommand(msg) {
         command = subCmdResult.command;
         let args = mergeQuery(subCmdResult.args);
 
-        console.log(`command is ${command.name} after sub command check, args are: ${args.toString()}`);
+        logger.info(`command is ${command.name} after sub command check, args are: ${args.toString()}`);
 
         let {returnObj, slice} = await checkArgs(command.args, args, userPermissionLevel, msg.member);
         let argsObject = returnObj;
@@ -45,19 +45,15 @@ async function parseCommand(msg) {
 
 // gets the base command
 function getCommand(commandName) {
-    console.log("Command input: " + commandName);
-
     let command = commands.find(cmd => cmd.name === commandName);
 
     if (command) {
-        console.log("Found command: " + command.name);
         return command;
     }
 
     //check for aliases
     for (let cmd of commands) {
         if (cmd.aliases && cmd.aliases.includes(commandName)) {
-            console.log(`Found command ${cmd.name} with alias ${commandName}`);
             return cmd;
         }
     }
@@ -148,8 +144,6 @@ async function checkArgs(requiredArgs, actualArgs, userPermissionLevel, member) 
         if (requiredArg.type === "voiceChannel") {
             let channel;
             let filteredChannel = client.channels.cache.find(channel => channel.type === "voice" && channel.name.localeCompare(actualArg, "de", {sensitivity: "accent"}) === 0);
-
-            console.log("filtered channel", filteredChannel);
 
             if (filteredChannel) {
                 channel = filteredChannel;
@@ -247,11 +241,9 @@ function parseFlags(command, args, returnObj) {
             continue;
         }
 
-        console.log("before: " + i);
         if (arg.startsWith("-")) {
             i = parseShortFlag(i, args, command, returnObj);
         }
-        console.log("after: " + i);
     }
 }
 
@@ -326,7 +318,7 @@ function getValueForFlag(flag, nextArg) {
 function loadCommands() {
     loadCommandsInDir("./commands");
 
-    console.log(`Loaded ${commands.length} commands`);
+    logger.info(`Loaded ${commands.length} commands`);
 }
 
 function loadCommandsInDir(path) {

@@ -32,7 +32,6 @@ class UIComponent extends EventEmitter {
                     this.#collector = message.createReactionCollector(this.#filter);
                     this.#collector.on("collect", reaction => {
                         super.emit(reaction.emoji.name);
-                        console.log(reaction.emoji.name);
                         reaction.users.fetch({limit: 5})
                             .then(users => {
                                 let remove = [];

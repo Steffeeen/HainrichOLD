@@ -41,7 +41,7 @@ async function loadSpotifyToken() {
     }
 
     let data = await spotifyApi.clientCredentialsGrant();
-    console.log(`The access token expires in ${data.body["expires_in"]}`);
+    logger.info(`The access token expires in ${data.body["expires_in"]}`);
     spotifyApi.setAccessToken(data.body["access_token"]);
     spotifyTokenExpireDate = Date.now() + data.body["expires_in"];
 }

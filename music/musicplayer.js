@@ -94,7 +94,7 @@ function nextSong() {
         startStream(nextSong);
         eventEmitter.emit("changeSong", queue.getCurrentSong(), queue.getProgress());
     } else {
-        console.log(`next song is undefined`);
+        logger.log("debug", `next song is undefined`);
     }
 }
 
@@ -134,17 +134,14 @@ function isPaused() {
 async function startStream(song) {
     if (voiceConnection) {
         let file = await songLoader.getFile(song);
-        console.log(`playing ${file}`);
         dispatcher = voiceConnection.play(file, {
             volume: volume,
             passes: config.passes,
             seek: queue.getCurrentSong().start
         });
-        console.log("started stream");
         streamRunning = true;
 
         dispatcher.on("finish", reason => {
-            console.log(`was user? ${wasUser}`);
             if (!wasUser) {
                 nextSong();
                 wasUser = false;
@@ -196,7 +193,6 @@ async function addToQueue(songs, member) {
         await queue.addSongs(song.query, song.member);
     }
 
-    console.log("add to queue");
     eventEmitter.emit("queueChange", queue);
 }
 
