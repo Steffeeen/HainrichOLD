@@ -1,3 +1,12 @@
+global.logger = {
+    info: () => {
+    },
+    log: () => {
+    },
+    error: () => {
+    }
+}
+
 const handler = require("../commandhandler");
 
 global.config = {
@@ -10,7 +19,6 @@ global.config = {
     passes: 3,
     songCacheLocation: "songs"
 };
-
 
 let sendMessageMock;
 
