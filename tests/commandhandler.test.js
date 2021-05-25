@@ -75,12 +75,12 @@ test("list arg combined", async () => {
 
 test("union arg wrong type", async () => {
     await command("/example union abc");
-    expect(sendMessageMock).toHaveBeenCalledWith("abc: the provided argument doesn't match any of the following allowed types: value,wholeNumber");
+    expect(sendMessageMock).toHaveBeenCalledWith("abc: the provided argument doesn't match any of the following allowed types: value,integer");
 });
 
 test("union arg", async () => {
     await command("/example union 1");
-    expect(sendMessageMock).toHaveBeenCalledWith("example union wholeNumber 1");
+    expect(sendMessageMock).toHaveBeenCalledWith("example union integer 1");
 });
 
 test("union arg", async () => {

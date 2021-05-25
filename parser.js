@@ -14,8 +14,8 @@ function getParsed(expectedArg, arg) {
             return parseList(expectedArg, arg);
         case "positiveNumber":
             return parsePositiveNumber(expectedArg, arg);
-        case "wholeNumber":
-            return parseWholeNumber(expectedArg, arg);
+        case "integer":
+            return parseInteger(expectedArg, arg);
         case "decimal":
             return parseDecimal(expectedArg, arg);
         case "char":
@@ -101,11 +101,11 @@ function parsePositiveNumber(expected, arg) {
     return number;
 }
 
-function parseWholeNumber(expected, arg) {
+function parseInteger(expected, arg) {
     let number = parseInt(arg);
 
     if (isNaN(number)) {
-        throw new UserError(`${arg}: The argument provided is not a valid whole number`);
+        throw new UserError(`${arg}: The argument provided is not a valid integer`);
     }
 
     if (expected.min && expected.min > number) {

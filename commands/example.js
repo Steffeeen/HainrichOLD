@@ -6,7 +6,7 @@ module.exports = {
     args: [
         {
             name: "number",
-            type: "wholeNumber",
+            type: "integer",
             permissionLevel: 2,
             min: 1,
             max: 10
@@ -171,7 +171,7 @@ module.exports = {
                             type: "value",
                             values: ["test1", "test2"]
                         }, {
-                            type: "wholeNumber",
+                            type: "integer",
                             min: 1,
                             max: 10
                         }
