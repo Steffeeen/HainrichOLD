@@ -12,8 +12,8 @@ function getParsed(expectedArg, arg) {
             return parseValue(expectedArg, arg);
         case "list":
             return parseList(expectedArg, arg);
-        case "positiveNumber":
-            return parsePositiveNumber(expectedArg, arg);
+        case "positiveInteger":
+            return parsePositiveInteger(expectedArg, arg);
         case "integer":
             return parseInteger(expectedArg, arg);
         case "decimal":
@@ -45,7 +45,7 @@ function parseList(expected, arg) {
         }
 
         if (arg.match(NUMBER_REGEX)) {
-            list.push(parsePositiveNumber(expected, arg));
+            list.push(parsePositiveInteger(expected, arg));
         }
     }
 
@@ -83,19 +83,10 @@ function parseRange(expected, arg) {
     return list;
 }
 
-function parsePositiveNumber(expected, arg) {
-    if (!arg.match(NUMBER_REGEX)) {
-        throw new UserError(`${arg}: The argument provided is not a valid positive number`)
-    }
-
-    let number = parseInt(arg);
-
-    if (expected.min && expected.min > number) {
-        throw new UserError(`${arg}: The number must be bigger than ${expected.min}`);
-    }
-
-    if (expected.max && expected.max < number) {
-        throw new UserError(`${arg}: The number must be smaller than ${expected.max}`);
+function parsePositiveInteger(expected, arg) {
+    let number = parseInteger(expected, arg);
+    if (number < 0) {
+        throw new UserError(`${arg}: The argument provided is not a valid positive number`);
     }
 
     return number;

@@ -54,7 +54,7 @@ module.exports = {
             args: [
                 {
                     name: "index",
-                    type: "positiveNumber",
+                    type: "positiveInteger",
                     min: 1,
                     max: 1
                 }
@@ -98,7 +98,7 @@ module.exports = {
             args: [
                 {
                     name: "volume",
-                    type: "positiveNumber",
+                    type: "positiveInteger",
                     optional: true,
                     min: 0,
                     max: 100,

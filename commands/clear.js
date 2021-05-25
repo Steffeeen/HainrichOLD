@@ -6,7 +6,7 @@ module.exports = {
     args: [{
         name: "amount",
         permissionLevel: 1,
-        type: "positiveNumber",
+        type: "positiveInteger",
         min: 1,
         max: 100
     }],
