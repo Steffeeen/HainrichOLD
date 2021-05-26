@@ -214,6 +214,10 @@ function clearQueue() {
     eventEmitter.emit("queueChange", queue);
 }
 
+function getQueueLength() {
+    return queue.getSongAmount();
+}
+
 async function joinChannel(channel) {
     if (isInVoiceChannel()) {
         leaveChannel();
@@ -294,6 +298,7 @@ module.exports.leaveChannel = leaveChannel;
 module.exports.addToQueue = addToQueue;
 module.exports.removeFromQueue = removeFromQueue;
 module.exports.clearQueue = clearQueue;
+module.exports.getQueueLength = getQueueLength;
 module.exports.changeVolume = changeVolume;
 module.exports.getVolume = getVolume;
 module.exports.back = back;

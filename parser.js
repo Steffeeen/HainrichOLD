@@ -8,6 +8,8 @@ function getParsed(expectedArg, arg) {
     }
 
     switch (expectedArg.type) {
+        case "queueItem":
+            return parseQueueItem(expectedArg, arg);
         case "value":
             return parseValue(expectedArg, arg);
         case "list":
@@ -25,6 +27,12 @@ function getParsed(expectedArg, arg) {
         case "query":
             return arg;
     }
+}
+
+function parseQueueItem(expected, arg) {
+    expected.min = 1;
+    expected.max = musicplayer.getQueueLength();
+    return parsePositiveInteger(expected, arg);
 }
 
 function parseValue(expected, arg) {
