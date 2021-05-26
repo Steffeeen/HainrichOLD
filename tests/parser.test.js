@@ -58,41 +58,41 @@ describe("list", () => {
     });
 });
 
-describe("positiveNumber", () => {
+describe("positiveInteger", () => {
     test("valid number", () => {
-        const arg = {type: "positiveNumber"};
+        const arg = {type: "positiveInteger"};
         expect(parser.getParsed(arg, "1")).toBe(1);
     });
     test("character", () => {
-        const arg = {type: "positiveNumber"};
+        const arg = {type: "positiveInteger"};
         expect(() => parser.getParsed(arg, "a")).toThrow(UserError);
     });
     test("negative number", () => {
-        const arg = {type: "positiveNumber"};
+        const arg = {type: "positiveInteger"};
         expect(() => parser.getParsed(arg, "-3")).toThrow(UserError);
     });
     test("min valid", () => {
-        const arg = {type: "positiveNumber", min: 0};
+        const arg = {type: "positiveInteger", min: 0};
         expect(parser.getParsed(arg, "1")).toBe(1);
     });
     test("min invalid", () => {
-        const arg = {type: "positiveNumber", min: 5};
+        const arg = {type: "positiveInteger", min: 5};
         expect(() => parser.getParsed(arg, "3")).toThrow(UserError);
     });
     test("max valid", () => {
-        const arg = {type: "positiveNumber", max: 5};
+        const arg = {type: "positiveInteger", max: 5};
         expect(parser.getParsed(arg, "3")).toBe(3);
     });
     test("max invalid", () => {
-        const arg = {type: "positiveNumber", max: 5};
+        const arg = {type: "positiveInteger", max: 5};
         expect(() => parser.getParsed(arg, "7")).toThrow(UserError);
     });
     test("min max valid", () => {
-        const arg = {type: "positiveNumber", min: 1, max: 5};
+        const arg = {type: "positiveInteger", min: 1, max: 5};
         expect(parser.getParsed(arg, "3")).toBe(3);
     });
     test("min max invalid", () => {
-        const arg = {type: "positiveNumber", min: 1, max: 5};
+        const arg = {type: "positiveInteger", min: 1, max: 5};
         expect(() => parser.getParsed(arg, "7")).toThrow(UserError);
     });
 });
