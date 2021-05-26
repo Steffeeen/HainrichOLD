@@ -1,8 +1,9 @@
 const {UserError} = require("./error");
 const RANGE_REGEX = /^[0-9]+-[0-9]+$/;
 const NUMBER_REGEX = /^[0-9]+$/;
+const USER_REGEX = /^<@!?(\d+)>$/;
 
-function getParsed(expectedArg, arg) {
+async function getParsed(expectedArg, arg) {
     if (!arg) {
         throw new UserError(`An argument of type ${expectedArg.type} was expected`);
     }
@@ -10,6 +11,8 @@ function getParsed(expectedArg, arg) {
     switch (expectedArg.type) {
         case "queueItem":
             return parseQueueItem(expectedArg, arg);
+        case "user":
+            return parseUser(expectedArg, arg);
         case "value":
             return parseValue(expectedArg, arg);
         case "list":
@@ -33,6 +36,17 @@ function parseQueueItem(expected, arg) {
     expected.min = 1;
     expected.max = musicplayer.getQueueLength();
     return parsePositiveInteger(expected, arg);
+}
+
+async function parseUser(expected, arg) {
+    let matches = arg.match(USER_REGEX);
+
+    if (!matches) {
+        // not a valid user
+        throw new UserError("The supplied argument is not a valid user");
+    }
+
+    return await client.users.fetch(matches[1], false);
 }
 
 function parseValue(expected, arg) {

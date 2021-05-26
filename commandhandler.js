@@ -33,7 +33,7 @@ async function parseCommand(msg) {
         let {returnObj, slice} = await checkArgs(command.args, args, userPermissionLevel, msg.member);
         let argsObject = returnObj;
 
-        parseFlags(command, args.slice(slice), argsObject);
+        await parseFlags(command, args.slice(slice), argsObject);
 
         command.run(msg, argsObject, {permissionLevel: userPermissionLevel});
     } catch (error) {
@@ -194,7 +194,7 @@ async function checkArgs(requiredArgs, actualArgs, userPermissionLevel, member) 
             let type;
             for (let allowedArg of requiredArg.allowedArgs) {
                 try {
-                    item = parser.getParsed(allowedArg, actualArg);
+                    item = await parser.getParsed(allowedArg, actualArg);
                 } catch (e) {
                     // we got an error parsing, the actualArg is not valid for this type, move on to next
                     continue;
@@ -214,7 +214,7 @@ async function checkArgs(requiredArgs, actualArgs, userPermissionLevel, member) 
             continue;
         }
 
-        let item = parser.getParsed(requiredArg, actualArg);
+        let item = await parser.getParsed(requiredArg, actualArg);
 
         if (requiredArg.permissionLevel && requiredArg.permissionLevel > userPermissionLevel) {
             throw new UserError(`${requiredArg.name}: You don't have permission to use this argument`);
@@ -228,7 +228,7 @@ async function checkArgs(requiredArgs, actualArgs, userPermissionLevel, member) 
 }
 
 // parses the flags
-function parseFlags(command, args, returnObj) {
+async function parseFlags(command, args, returnObj) {
     if (!command.flags) {
         return
     }
@@ -237,23 +237,23 @@ function parseFlags(command, args, returnObj) {
         let arg = args[i];
 
         if (arg.startsWith("--")) {
-            i = parseLongFlag(i, args, command, returnObj);
+            i = await parseLongFlag(i, args, command, returnObj);
             continue;
         }
 
         if (arg.startsWith("-")) {
-            i = parseShortFlag(i, args, command, returnObj);
+            i = await parseShortFlag(i, args, command, returnObj);
         }
     }
 }
 
 // parses a flag like --example
-function parseLongFlag(index, args, command, returnObj) {
+async function parseLongFlag(index, args, command, returnObj) {
     let arg = args[index];
 
     for (let flag of command.flags) {
         if (flag.long === arg) {
-            let {value, add} = getValueForFlag(flag, args[index + 1]);
+            let {value, add} = await getValueForFlag(flag, args[index + 1]);
 
             index += add;
 
@@ -266,7 +266,7 @@ function parseLongFlag(index, args, command, returnObj) {
 }
 
 // parses a flag like -e
-function parseShortFlag(index, args, command, returnObj) {
+async function parseShortFlag(index, args, command, returnObj) {
     let arg = args[index];
     let shortFlags = arg.split("");
 
@@ -278,7 +278,7 @@ function parseShortFlag(index, args, command, returnObj) {
 
         for (let flag of command.flags) {
             if (flag.short === "-" + shortFlag) {
-                let {value, add} = getValueForFlag(flag, args[index + 1]);
+                let {value, add} = await getValueForFlag(flag, args[index + 1]);
 
                 index += add;
                 Object.defineProperty(returnObj, flag.name, {value: value});
@@ -296,7 +296,7 @@ function parseShortFlag(index, args, command, returnObj) {
 }
 
 // returns true if the flag does not need an arg or has a predefined value to return
-function getValueForFlag(flag, nextArg) {
+async function getValueForFlag(flag, nextArg) {
     if (flag.arg && !nextArg) {
         throw new UserError(`${flag.name}: This flag needs a argument of type ${flag.arg.type}`);
     }
@@ -305,7 +305,7 @@ function getValueForFlag(flag, nextArg) {
     let add = 0;
 
     if (flag.arg) {
-        value = parser.getParsed(flag.arg.type, nextArg);
+        value = await parser.getParsed(flag.arg.type, nextArg);
         add = 1;
     } else {
         value = flag.value ? flag.value : true;
