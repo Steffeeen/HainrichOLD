@@ -38,10 +38,10 @@ client.login(process.env.DISCORD_TOKEN)
 client.on('ready', () => {
     logger.info(`Logged in as ${client.user.tag}!`);
 
-    /*global.musicplayer = require("./music/musicplayer");
+    global.musicplayer = require("./music/musicplayer");
     const musicplayerUI = require("./music/musicplayerUI");
     const argsUpdater = require("./music/argsUpdater");
-    musicplayerUI.init();*/
+    musicplayerUI.init();
 
     client.on("message", msg => onMessage(msg));
 });
