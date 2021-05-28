@@ -123,8 +123,8 @@ async function checkArgs(requiredArgs, actualArgs, userPermissionLevel, member) 
         let requiredArg = requiredArgs[i];
         let actualArg = actualArgs[i];
 
-        // the last required arg is a query, just concat all the following args that are not flags
-        if (i === requiredArgs.length - 1 && requiredArg.type === "query") {
+        // the last required arg is a query or queueItems, just concat all the following args that are not flags
+        if (i === requiredArgs.length - 1 && (requiredArg.type === "query" || requiredArg.type === "queueItems")) {
             let concat = "";
 
             for (let j = i; j < actualArgs.length; j++) {
