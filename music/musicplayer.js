@@ -214,11 +214,6 @@ function removeFromQueue(...indices) {
     eventEmitter.emit("queueChange", queue);
 }
 
-function removeFromQueueByMember(member) {
-    queue.removeByMember(member);
-    eventEmitter.emit("queueChange", queue);
-}
-
 function clearQueue() {
     //TODO change to a general stop function which also handles stuff like emitting event for updating the ui
     stopStream();
@@ -309,7 +304,6 @@ module.exports.joinChannel = joinChannel;
 module.exports.leaveChannel = leaveChannel;
 module.exports.addToQueue = addToQueue;
 module.exports.removeFromQueue = removeFromQueue;
-module.exports.removeFromQueueByMember = removeFromQueueByMember;
 module.exports.clearQueue = clearQueue;
 module.exports.getQueueLength = getQueueLength;
 module.exports.changeVolume = changeVolume;

@@ -76,10 +76,6 @@ function removeSongs(...indices) {
     queue = queue.filter((value, index) => !indices.includes(index));
 }
 
-function removeByMember(member) {
-    queue = queue.filter(value => value.member.id !== member.id);
-}
-
 function clear() {
     queue = [];
     setRandom(random);
@@ -207,7 +203,6 @@ module.exports = {
     getCurrentSong: getCurrentSong,
     addSongs: addSongs,
     removeSongs: removeSongs,
-    removeByMember: removeByMember,
     getQueue: getQueue,
     clear: clear,
     setRandom: setRandom,
