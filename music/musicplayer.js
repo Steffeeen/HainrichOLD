@@ -7,7 +7,20 @@ const events = require("events");
 
 const eventEmitter = new events.EventEmitter();
 
-const ytSearch = util.promisify(ytSearchCallback);
+patchEmitter(eventEmitter);
+
+function patchEmitter(emitter) {
+    let oldEmit = emitter.emit;
+
+    emitter.emit = function () {
+        let emitArgs = arguments;
+        logger.log("debug", "Event:");
+        logger.log("debug", emitArgs[0]);
+        oldEmit.apply(emitter, arguments);
+    }
+}
+
+const ytSearch = nodeUtil.promisify(ytSearchCallback);
 
 let textChannel;
 
