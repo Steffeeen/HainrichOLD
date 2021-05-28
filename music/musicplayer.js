@@ -259,7 +259,6 @@ function handleVoiceStateChange(oldState, newState) {
 
 async function handleLeave(oldState) {
     let channel = await client.channels.fetch(oldState.channelID);
-    console.log(`voice channel has ${channel.members.filter(value => !value.user.bot).size} members`);
     if (channel.members.filter((value) => !value.user.bot).size === 0) {
         eventEmitter.emit("showLeaveChannelTimer");
         leaveChannelTimer = setTimeout(() => {
@@ -297,6 +296,7 @@ module.exports.joinChannel = joinChannel;
 module.exports.leaveChannel = leaveChannel;
 module.exports.addToQueue = addToQueue;
 module.exports.removeFromQueue = removeFromQueue;
+module.exports.removeFromQueueByMember = removeFromQueueByMember;
 module.exports.clearQueue = clearQueue;
 module.exports.getQueueLength = getQueueLength;
 module.exports.changeVolume = changeVolume;

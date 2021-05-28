@@ -77,7 +77,7 @@ function removeSongs(...indices) {
 }
 
 function removeByMember(member) {
-    queue = queue.filter(value => value.member !== member);
+    queue = queue.filter(value => value.member.id !== member.id);
 }
 
 function clear() {
