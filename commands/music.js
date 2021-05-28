@@ -132,15 +132,25 @@ module.exports = {
             aliases: ["r"],
             args: [
                 {
-                    name: "indices",
-                    type: "list",
-                    min: 1,
-                    max: 1
+                    name: "items",
+                    type: "queueItems"
+                }
+            ],
+            flags: [
+                {
+                    name: "multiple",
+                    short: "-m",
+                    long: "--multiple",
+                    description: "whether to remove multiple, only used when inputting a regex"
                 }
             ],
             run: (msg, args) => {
-                let indices = args.indices.map(index => index - 1);
-                musicplayer.removeFromQueue(...indices);
+                let {type, indices} = args.items;
+                if (type === "regex" && !args.multiple) {
+                    musicplayer.removeFromQueue(indices.shift());
+                } else {
+                    musicplayer.removeFromQueue(...indices);
+                }
             }
         }, {
             name: "move"
