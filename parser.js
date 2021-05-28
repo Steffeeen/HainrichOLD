@@ -34,27 +34,40 @@ async function getParsed(expectedArg, arg) {
 }
 
 async function parseQueueItems(expected, arg) {
-    let parsingFunctions = [parseQueueItemsAsList, /*parseQueueItemsFromName,*/ parseQueueItemsFromMember, parseQueueItemsFromRegex];
-    let value;
+    let parsingFunctions = [parseQueueItemsAsList, parseQueueItemsFromMember, parseQueueItemsFromRegex];
+    let indices;
+    let type;
 
     for (let parsingFunction of parsingFunctions) {
         try {
-            value = await parsingFunction(expected, arg);
+            indices = await parsingFunction(expected, arg);
         } catch (e) {
             // error while parsing with the current function, try the next one
             continue;
         }
         // the input was parsed by the current function, break out of the loop
-        console.log("the input was correctly parsed by " + parsingFunction.name);
+        type = getType(parsingFunction.name);
         break;
     }
 
-    if (!value) {
+    if (!indices) {
         // none of the functions could parse the input
         throw new UserError("Failed to parse the queue item description");
     }
 
-    return value;
+    return {type, indices};
+}
+
+function getType(functionName) {
+    console.log(`parsed by ${functionName}`);
+    switch (functionName) {
+        case "parseQueueItemsAsList":
+            return "list";
+        case "parseQueueItemsFromMember":
+            return "member";
+        case "parseQueueItemsFromRegex":
+            return "regex";
+    }
 }
 
 async function parseQueueItemsAsList(expected, arg) {
@@ -65,11 +78,6 @@ async function parseQueueItemsAsList(expected, arg) {
     expected.min = 1;
     expected.max = musicplayer.getQueueLength();
     return parseList(expected, arg).map(i => i - 1);
-}
-
-async function parseQueueItemsFromName(expected, arg) {
-    let indices = [];
-
 }
 
 async function parseQueueItemsFromRegex(expected, arg) {

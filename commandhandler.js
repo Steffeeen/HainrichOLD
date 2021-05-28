@@ -137,8 +137,7 @@ async function checkArgs(requiredArgs, actualArgs, userPermissionLevel, member) 
                 concat += " ";
             }
 
-            returnObj = Object.defineProperty(returnObj, requiredArg.name, {value: concat});
-            break;
+            actualArgs[i] = concat;
         }
 
         if (requiredArg.type === "voiceChannel") {
@@ -219,7 +218,9 @@ async function checkArgs(requiredArgs, actualArgs, userPermissionLevel, member) 
         if (requiredArg.permissionLevel && requiredArg.permissionLevel > userPermissionLevel) {
             throw new UserError(`${requiredArg.name}: You don't have permission to use this argument`);
         }
-        sliceIndex++;
+        if (requiredArg.type !== "query" && requiredArg.type !== "queueItems") {
+            sliceIndex++;
+        }
 
         returnObj = Object.defineProperty(returnObj, requiredArg.name, {value: item});
     }
