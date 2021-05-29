@@ -43,5 +43,8 @@ global.logger = createLogger({
         })
     ]
 });
+logger.debug = (message, object) => {
+    logger.log("debug", message, object);
+};
 
 module.exports.debug = debug;
