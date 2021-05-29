@@ -153,7 +153,38 @@ module.exports = {
                 }
             }
         }, {
-            name: "move"
+            name: "move",
+            aliases: ["m", "mo", "mov"],
+            args: [
+                {
+                    name: "items",
+                    type: "queueItems"
+                }, {
+                    name: "to",
+                    type: "queueItems"
+                }
+            ],
+            flags: [
+                {
+                    name: "multiple",
+                    short: "-m",
+                    long: "--multiple",
+                    description: "whether to remove multiple, only used when inputting a regex"
+                }
+            ],
+            run: (msg, args) => {
+                console.log("move");
+                let itemType = args.items.type;
+                let itemIndices = args.items.indices;
+                let toIndices = args.to.indices;
+                let to = toIndices.shift();
+
+                if (itemType === "regex" && !args.multiple) {
+                    musicplayer.moveSongs(to, itemIndices.shift());
+                } else {
+                    musicplayer.moveSongs(to, ...itemIndices);
+                }
+            }
         }, {
             name: "clear",
             aliases: ["c"],

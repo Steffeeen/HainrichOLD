@@ -26,7 +26,7 @@ function getCurrentSongIndex() {
 }
 
 function getSong(index) {
-    if(random) {
+    if (random) {
         return queue[randomOrder[index]];
     }
     return queue[index];
@@ -76,6 +76,26 @@ function removeSongs(...indices) {
     queue = queue.filter((value, index) => !indices.includes(index));
 }
 
+function moveSongs(to, ...indices) {
+    let items = [];
+
+    for (let i = 0; i < indices.length; i++) {
+        let index = indices[i];
+
+        // remove the item from the queue
+        let item = queue.splice(index, 1)[0];
+        items.push(item);
+
+        for (let j = i + 1; j < indices.length; j++) {
+            if (indices[j] > index) {
+                indices[j]--;
+            }
+        }
+    }
+
+    queue.splice(to, 0, ...items);
+}
+
 function clear() {
     queue = [];
     setRandom(random);
@@ -113,17 +133,17 @@ function getNextSongToPlay() {
 }
 
 function goToSong(index) {
-    if(index < 0 || index >= queue.length) {
+    if (index < 0 || index >= queue.length) {
         return;
     }
 
     //End of queue without looping
-    if(loop === 0 && index >= queue.length) {
+    if (loop === 0 && index >= queue.length) {
         return;
     }
 
     //End of queue with looping
-    if(loop === 1 && index >= queue.length) {
+    if (loop === 1 && index >= queue.length) {
         currentSong = 0;
         return getSong(currentSong);
     }
@@ -143,17 +163,17 @@ function goToPrevSong() {
 function setRandom(r) {
     random = r;
 
-    if(random) {
+    if (random) {
         randomOrder = [];
 
         let numbers = [];
-        for(let i = 0; i < 20; i++) {
+        for (let i = 0; i < 20; i++) {
             numbers.push(i);
         }
 
         let length = numbers.length;
 
-        for(let i = 0; i < length; i++) {
+        for (let i = 0; i < length; i++) {
             let index = Math.floor(Math.random() * numbers.length);
             randomOrder.push(numbers[index]);
             numbers.splice(index, 1);
@@ -199,10 +219,15 @@ function cycleLoop() {
     return loop;
 }
 
+function toString() {
+    return queue.map((song, index) => `${index + 1}) ${song.title}`).join("\n");
+}
+
 module.exports = {
     getCurrentSong: getCurrentSong,
     addSongs: addSongs,
     removeSongs: removeSongs,
+    moveSongs: moveSongs,
     getQueue: getQueue,
     clear: clear,
     setRandom: setRandom,
