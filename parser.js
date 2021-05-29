@@ -2,7 +2,7 @@ const {UserError} = require("./error");
 const RANGE_REGEX = /^[0-9]+-[0-9]+$/;
 const NUMBER_REGEX = /^[0-9]+$/;
 const USER_REGEX = /^<@!?(\d+)>$/;
-const LIST_REGEX = /^((\d+)|(\d+-\d+))(,((\d+)|(\d+-\d+)))*$/;
+const LIST_REGEX = /^\s*((\d+)|(\d+-\d+))(,((\d+)|(\d+-\d+)))*\s*$/;
 
 async function getParsed(expectedArg, arg) {
     if (!arg) {
@@ -59,7 +59,6 @@ async function parseQueueItems(expected, arg) {
 }
 
 function getType(functionName) {
-    console.log(`parsed by ${functionName}`);
     switch (functionName) {
         case "parseQueueItemsAsList":
             return "list";
@@ -85,7 +84,6 @@ async function parseQueueItemsFromRegex(expected, arg) {
     let indices = [];
     for (let i = 0; i < musicplayer.queue.getSongAmount(); i++) {
         if (regex.test(musicplayer.queue.getQueue()[i].title)) {
-            console.log(`${i} matches`);
             indices.push(i);
         }
     }
@@ -130,7 +128,7 @@ function parseValue(expected, arg) {
 }
 
 function parseList(expected, arg) {
-    let args = arg.split(",");
+    let args = arg.trim().split(",");
 
     let list = [];
 
