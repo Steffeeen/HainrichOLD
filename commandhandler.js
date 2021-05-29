@@ -138,6 +138,7 @@ async function checkArgs(requiredArgs, actualArgs, userPermissionLevel, member) 
             }
 
             actualArgs[i] = concat;
+            actualArg = concat;
         }
 
         if (requiredArg.type === "voiceChannel") {
