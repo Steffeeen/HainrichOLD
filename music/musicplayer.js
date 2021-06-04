@@ -231,6 +231,10 @@ function getQueueLength() {
     return queue.getSongAmount();
 }
 
+function getSongInfo(index) {
+    return queue.getSong(index);
+}
+
 async function joinChannel(channel) {
     if (isInVoiceChannel()) {
         leaveChannel();
@@ -312,6 +316,7 @@ module.exports.removeFromQueue = removeFromQueue;
 module.exports.moveSongs = moveSongs;
 module.exports.clearQueue = clearQueue;
 module.exports.getQueueLength = getQueueLength;
+module.exports.getSongInfo = getSongInfo;
 module.exports.changeVolume = changeVolume;
 module.exports.getVolume = getVolume;
 module.exports.back = back;

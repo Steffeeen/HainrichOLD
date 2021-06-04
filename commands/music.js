@@ -1,3 +1,5 @@
+const util = require("../util/util");
+
 module.exports = {
     name: "music",
     description: "Everything for controlling music",
@@ -203,6 +205,39 @@ module.exports = {
             ],
             run(msg, args) {
                 musicplayer.search(args.query, msg);
+            }
+        }, {
+            name: "info",
+            aliases: ["i"],
+            args: [
+                {
+                    name: "item",
+                    type: "queueItems"
+                }
+            ],
+            run(msg, args) {
+                let index = args.item.indices[0];
+                let info = musicplayer.getSongInfo(index);
+                let embed = {
+                    color: 0x65E382,
+                    title: `${index + 1}) ${info.title}`,
+                    url: info.url,
+                    thumbnail: {
+                        url: info.imageUrl
+                    },
+                    fields: [
+                        {
+                            name: "Length",
+                            value: util.convertSecondsToTimeString(info.length),
+                            inline: true
+                        }, {
+                            name: "Added By",
+                            value: info.member.username,
+                            inline: true
+                        }
+                    ]
+                };
+                msg.channel.send({embed: embed});
             }
         },
         /*
