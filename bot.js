@@ -38,6 +38,8 @@ client.login(process.env.DISCORD_TOKEN)
 client.on('ready', () => {
     logger.info(`Logged in as ${client.user.tag}!`);
 
+    return;
+
     global.musicplayer = require("./music/musicplayer");
     const musicplayerUI = require("./music/musicplayerUI");
     const argsUpdater = require("./music/argsUpdater");
